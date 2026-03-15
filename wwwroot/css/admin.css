@@ -1,0 +1,868 @@
+/* ===================================
+   Admin Panel CSS - Dashboard Styles
+   =================================== */
+
+/* Color Variables */
+:root {
+    --primary-color: #C1121F;
+    --secondary-color: #780000;
+    --accent-color: #28A745;
+    --bg-light: #F8F9FA;
+    --text-dark: #212529;
+    --text-muted: #6C757D;
+    --border-color: #DEE2E6;
+    --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Reset & Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-dark);
+}
+
+/* Wrapper & Layout */
+.wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    min-width: 260px;
+    max-width: 260px;
+    background: #212529;
+    color: #F8F9FA;
+    transition: all 0.3s ease;
+    position: fixed;
+    height: 100vh;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Sidebar Header - Fixed at Top */
+.sidebar-header {
+    padding: 25px 20px;
+    text-align: center;
+    border-bottom: 1px solid rgba(248, 249, 250, 0.1);
+    background: #212529;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-header h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: #F8F9FA;
+}
+
+.sidebar-header p, .sidebar-subtitle {
+    color: rgba(248, 249, 250, 0.7) !important;
+}
+
+/* Sidebar Navigation - Scrollable Middle Section */
+.sidebar .components {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 0;
+    scroll-behavior: smooth;
+}
+
+/* Components Scrollbar */
+.sidebar .components::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar .components::-webkit-scrollbar-track {
+    background: rgba(248, 249, 250, 0.05);
+}
+
+.sidebar .components::-webkit-scrollbar-thumb {
+    background: rgba(193, 18, 31, 0.5);
+    border-radius: 3px;
+}
+
+.sidebar .components::-webkit-scrollbar-thumb:hover {
+    background: rgba(193, 18, 31, 0.8);
+}
+
+.sidebar .list-unstyled {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+    padding: 10px 0;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul li {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+.sidebar ul li a {
+    padding: 15px 20px;
+    font-size: 1rem;
+    display: block;
+    color: #F8F9FA;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.sidebar ul li a i {
+    width: 20px;
+    text-align: center;
+    margin-right: 10px;
+    color: #F8F9FA;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
+    background-color: rgba(193, 18, 31, 0.2);
+    border-left: 4px solid #C1121F;
+    padding-left: 16px;
+    color: #F8F9FA;
+}
+
+.sidebar ul li a:hover i,
+.sidebar ul li a.active i {
+    color: #C1121F;
+}
+
+/* Sidebar Footer - Fixed at Bottom */
+.sidebar-footer {
+    padding: 20px;
+    border-top: 1px solid rgba(248, 249, 250, 0.1);
+    background: #212529;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.admin-info {
+    background-color: rgba(193, 18, 31, 0.15);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    color: #F8F9FA;
+}
+
+.admin-info i,
+.admin-info span {
+    color: #F8F9FA;
+}
+
+.sidebar-footer .btn-outline-danger {
+    border-color: #C1121F;
+    color: #F8F9FA;
+}
+
+.sidebar-footer .btn-outline-danger:hover {
+    background-color: #C1121F;
+    border-color: #C1121F;
+    color: #F8F9FA;
+}
+
+/* Main Content */
+#content {
+    width: 100%;
+    min-height: 100vh;
+    transition: all 0.3s;
+    margin-left: 260px;
+    background-color: var(--bg-light);
+}
+
+.btn-primary-custom {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary-custom:hover {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+/* ===================================
+   Dashboard Cards Styles
+   =================================== */
+
+.dashboard-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: var(--card-shadow);
+    transition: all 0.3s ease;
+    height: 100%;
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #C1121F, #780000);
+}
+
+.dashboard-card:hover {
+    box-shadow: var(--card-shadow-hover);
+    transform: translateY(-5px);
+}
+
+.card-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-info {
+    flex: 1;
+}
+
+.card-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.card-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 5px;
+}
+
+.card-subtext {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.card-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    opacity: 0.9;
+}
+
+/* Card Color Schemes */
+.card-customers::before {
+    background: linear-gradient(180deg, #4E73DF, #224ABB);
+}
+
+.card-customers .card-icon {
+    background: linear-gradient(135deg, #4E73DF, #224ABB);
+    color: white;
+}
+
+.card-orders::before {
+    background: linear-gradient(180deg, #1CC88A, #13855C);
+}
+
+.card-orders .card-icon {
+    background: linear-gradient(135deg, #1CC88A, #13855C);
+    color: white;
+}
+
+.card-revenue::before {
+    background: linear-gradient(180deg, #F6C23E, #D4A01A);
+}
+
+.card-revenue .card-icon {
+    background: linear-gradient(135deg, #F6C23E, #D4A01A);
+    color: white;
+}
+
+.card-food::before {
+    background: linear-gradient(180deg, #E74A3B, #BE2617);
+}
+
+.card-food .card-icon {
+    background: linear-gradient(135deg, #E74A3B, #BE2617);
+    color: white;
+}
+
+.card-categories::before {
+    background: linear-gradient(180deg, #36B9CC, #258391);
+}
+
+.card-categories .card-icon {
+    background: linear-gradient(135deg, #36B9CC, #258391);
+    color: white;
+}
+
+.card-combos::before {
+    background: linear-gradient(180deg, #858796, #60616F);
+}
+
+.card-combos .card-icon {
+    background: linear-gradient(135deg, #858796, #60616F);
+    color: white;
+}
+
+.card-reviews::before {
+    background: linear-gradient(180deg, #FFC107, #FF9800);
+}
+
+.card-reviews .card-icon {
+    background: linear-gradient(135deg, #FFC107, #FF9800);
+    color: white;
+}
+
+.card-coupons::before {
+    background: linear-gradient(180deg, #9C27B0, #7B1FA2);
+}
+
+.card-coupons .card-icon {
+    background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+    color: white;
+}
+
+.card-payments::before {
+    background: linear-gradient(180deg, #00BCD4, #0097A7);
+}
+
+.card-payments .card-icon {
+    background: linear-gradient(135deg, #00BCD4, #0097A7);
+    color: white;
+}
+
+/* ===================================
+   Chart Card Styles
+   =================================== */
+
+.chart-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    border: none;
+}
+
+.chart-card .card-header {
+    background: white;
+    border-bottom: 2px solid var(--bg-light);
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.chart-filters {
+    display: flex;
+    gap: 10px;
+}
+
+.filter-btn {
+    padding: 8px 20px;
+    border: 2px solid var(--border-color);
+    background: white;
+    color: var(--text-dark);
+    border-radius: 25px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.filter-btn.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+/* ===================================
+   Orders Table Styles
+   =================================== */
+
+.orders-table {
+    margin: 0;
+}
+
+.orders-table thead {
+    background-color: var(--bg-light);
+}
+
+.orders-table thead th {
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-dark);
+    border: none;
+    padding: 15px;
+}
+
+.orders-table tbody td {
+    padding: 15px;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.orders-table tbody tr:hover {
+    background-color: var(--bg-light);
+}
+
+/* Order Status Badges */
+.status-pending {
+    background-color: #FFC107;
+    color: #000;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-confirmed {
+    background-color: #17A2B8;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-preparing {
+    background-color: #FF5722;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-delivery {
+    background-color: #9C27B0;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-delivered {
+    background-color: #28A745;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-cancelled {
+    background-color: #DC3545;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* ===================================
+   Status Table (Breakdown) Styles
+   =================================== */
+
+.status-table {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: var(--bg-light);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.status-row:hover {
+    background-color: #e9ecef;
+    transform: translateX(5px);
+}
+
+.status-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.status-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.bg-pending {
+    background-color: #FFC107;
+}
+
+.bg-confirmed {
+    background-color: #17A2B8;
+}
+
+.bg-preparing {
+    background-color: #FF5722;
+}
+
+.bg-delivery {
+    background-color: #9C27B0;
+}
+
+.bg-delivered {
+    background-color: #28A745;
+}
+
+.bg-cancelled {
+    background-color: #DC3545;
+}
+
+.status-name {
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.status-count {
+    font-weight: 700;
+    color: var(--text-dark);
+    font-size: 1.1rem;
+}
+
+/* ===================================
+   Top Selling Items Styles
+   =================================== */
+
+.top-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.top-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background-color: var(--bg-light);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.top-item:hover {
+    background-color: #e9ecef;
+    transform: translateX(5px);
+}
+
+.item-rank {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.item-details {
+    flex: 1;
+}
+
+.item-name {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--text-dark);
+}
+
+.item-stats {
+    display: flex;
+    gap: 8px;
+    margin: 0;
+}
+
+.item-stats .badge {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+}
+
+/* ===================================
+   Quick Actions Styles
+   =================================== */
+
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+}
+
+.action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 25px 15px;
+    background: white;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--text-dark);
+    transition: all 0.3s ease;
+    gap: 10px;
+}
+
+.action-btn:hover {
+    border-color: var(--primary-color);
+    background-color: var(--primary-color);
+    color: white;
+    transform: translateY(-5px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+.action-btn i {
+    font-size: 2rem;
+}
+
+.action-btn span {
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+/* ===================================
+   Card & Table Styles
+   =================================== */
+
+.card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    border: none;
+    margin-bottom: 0;
+}
+
+.card-header {
+    background: white;
+    border-bottom: 2px solid var(--bg-light);
+    padding: 20px 25px;
+    border-radius: 12px 12px 0 0;
+}
+
+.card-header h5 {
+    margin: 0;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.card-body {
+    padding: 25px;
+}
+
+.table-responsive {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* ===================================
+   Responsive Styles
+   =================================== */
+
+@media (max-width: 991px) {
+    .sidebar {
+        margin-left: -260px;
+    }
+
+    #content {
+        margin-left: 0;
+    }
+
+    .sidebar.active {
+        margin-left: 0;
+    }
+
+    .dashboard-card .card-value {
+        font-size: 1.5rem;
+    }
+
+    .card-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+
+    .quick-actions {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .chart-card .card-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .chart-filters {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .filter-btn {
+        flex: 1;
+        padding: 8px 10px;
+        font-size: 0.75rem;
+    }
+}
+
+/* ===================================
+   Payment Status Table Scroll
+   =================================== */
+
+.payment-status-scroll {
+    max-height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Custom Scrollbar for Payment Status Table */
+.payment-status-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+
+.payment-status-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.payment-status-scroll::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.payment-status-scroll::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Firefox Scrollbar */
+.payment-status-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+}
+
+/* Payment Table Sticky Header */
+.payment-status-scroll table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #fff;
+    z-index: 10;
+    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* ===================================
+   Admin Footer
+   =================================== */
+
+.admin-footer {
+    margin-top: 50px;
+}
+
+/* ===================================
+   Animation Effects
+   =================================== */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dashboard-card,
+.card {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* ===================================
+   Veg/Non-Veg Icons
+   =================================== */
+
+.veg-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: 2px solid #6A994E;
+    border-radius: 3px;
+    background-color: #fff;
+}
+
+.veg-circle {
+    width: 10px;
+    height: 10px;
+    background-color: #6A994E;
+    border-radius: 50%;
+}
+
+.non-veg-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: 2px solid #C1121F;
+    border-radius: 3px;
+    background-color: #fff;
+}
+
+.non-veg-circle {
+    width: 10px;
+    height: 10px;
+    background-color: #C1121F;
+    border-radius: 50%;
+}

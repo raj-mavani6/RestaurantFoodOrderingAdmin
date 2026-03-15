@@ -1,0 +1,242 @@
+/* ===================================
+   Chart Styles - Admin Dashboard
+   =================================== */
+
+/* Chart Container */
+.chart-card canvas {
+    max-height: 400px;
+    width: 100% !important;
+    height: auto !important;
+}
+
+#salesChart {
+    max-height: 350px;
+}
+
+#orderStatusChart {
+    max-height: 300px;
+}
+
+/* Chart Legend Customization */
+.chartjs-legend {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.chartjs-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.chartjs-legend-item:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.chartjs-legend-item span {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Chart Tooltip Customization */
+.chartjs-tooltip {
+    opacity: 1;
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 8px;
+    padding: 10px 15px;
+    pointer-events: none;
+    transform: translate(-50%, -120%);
+    transition: all 0.1s ease;
+    font-size: 0.875rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.chartjs-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid rgba(0, 0, 0, 0.8);
+}
+
+/* Chart Loading State */
+.chart-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    color: #6C757D;
+}
+
+.chart-loading i {
+    font-size: 3rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Chart No Data State */
+.chart-no-data {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    color: #6C757D;
+}
+
+.chart-no-data i {
+    font-size: 4rem;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.chart-no-data p {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+/* Chart Gradient Backgrounds */
+.chart-gradient-red {
+    background: linear-gradient(180deg, rgba(193, 18, 31, 0.2) 0%, rgba(193, 18, 31, 0) 100%);
+}
+
+.chart-gradient-green {
+    background: linear-gradient(180deg, rgba(28, 200, 138, 0.2) 0%, rgba(28, 200, 138, 0) 100%);
+}
+
+.chart-gradient-blue {
+    background: linear-gradient(180deg, rgba(78, 115, 223, 0.2) 0%, rgba(78, 115, 223, 0) 100%);
+}
+
+.chart-gradient-yellow {
+    background: linear-gradient(180deg, rgba(246, 194, 62, 0.2) 0%, rgba(246, 194, 62, 0) 100%);
+}
+
+/* Responsive Chart Styles */
+@media (max-width: 768px) {
+    .chart-card canvas {
+        max-height: 300px;
+    }
+
+    #salesChart {
+        max-height: 250px;
+    }
+
+    #orderStatusChart {
+        max-height: 250px;
+    }
+
+    .chartjs-legend {
+        gap: 8px;
+    }
+
+    .chartjs-legend-item {
+        font-size: 0.75rem;
+        padding: 3px 8px;
+    }
+}
+
+@media (max-width: 576px) {
+    .chart-card canvas {
+        max-height: 250px;
+    }
+
+    #salesChart {
+        max-height: 200px;
+    }
+
+    #orderStatusChart {
+        max-height: 200px;
+    }
+}
+
+/* Chart Animation */
+@keyframes chartFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.chart-card canvas {
+    animation: chartFadeIn 0.5s ease-out;
+}
+
+/* Chart Filter Buttons Active State */
+.chart-filters .filter-btn.active {
+    position: relative;
+}
+
+.chart-filters .filter-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--primary-color);
+}
+
+/* Chart Card Header Icons */
+.chart-card .card-header i {
+    color: var(--primary-color);
+}
+
+/* Doughnut/Pie Chart Center Text */
+.chart-center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+}
+
+.chart-center-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+}
+
+.chart-center-label {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Chart Grid Lines */
+.chartjs-render-monitor {
+    animation: chartFadeIn 0.3s ease-out;
+}
