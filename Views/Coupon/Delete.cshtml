@@ -1,0 +1,168 @@
+@model RestaurantFoodOrderingAdmin.Models.Coupon
+@{
+    ViewData["Title"] = "Delete Coupon";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>Delete Coupon
+        </h2>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to List
+        </a>
+    </div>
+
+    <!-- Warning Alert -->
+    <div class="alert alert-danger">
+        <h5 class="alert-heading">
+            <i class="fas fa-exclamation-circle me-2"></i>Warning!
+        </h5>
+        <p class="mb-0">Are you sure you want to delete this coupon? This action cannot be undone.</p>
+    </div>
+
+    <!-- Coupon Details Card -->
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Coupon to be Deleted</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">
+                            <i class="fas fa-tag me-2"></i>Coupon Code:
+                        </dt>
+                        <dd class="col-sm-8">
+                            <span class="badge bg-primary fs-6">@Model.CouponCode</span>
+                        </dd>
+
+                        <dt class="col-sm-4">
+                            <i class="fas fa-align-left me-2"></i>Description:
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Model.Description
+                        </dd>
+
+                        <dt class="col-sm-4">
+                            <i class="fas fa-percent me-2"></i>Discount Type:
+                        </dt>
+                        <dd class="col-sm-8">
+                            @if (Model.DiscountType == "Percentage")
+                            {
+                                <span class="badge bg-info">Percentage</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Fixed Amount</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">
+                            <i class="fas fa-gift me-2"></i>Discount Value:
+                        </dt>
+                        <dd class="col-sm-8">
+                            @if (Model.DiscountType == "Percentage")
+                            {
+                                <strong>@Model.DiscountValue%</strong>
+                                @if (Model.MaxDiscountAmount.HasValue)
+                                {
+                                    <span class="text-muted">(Max: ₹@Model.MaxDiscountAmount)</span>
+                                }
+                            }
+                            else
+                            {
+                                <strong>₹@Model.DiscountValue</strong>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">
+                            <i class="fas fa-shopping-cart me-2"></i>Minimum Order:
+                        </dt>
+                        <dd class="col-sm-8">
+                            ₹@Model.MinimumOrderAmount
+                        </dd>
+
+                        <dt class="col-sm-4">
+                            <i class="fas fa-calendar-check me-2"></i>Start Date:
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Model.StartDate.ToString("dd MMM yyyy, hh:mm tt")
+                        </dd>
+
+                        <dt class="col-sm-4">
+                            <i class="fas fa-calendar-times me-2"></i>Expiry Date:
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Model.ExpiryDate.ToString("dd MMM yyyy, hh:mm tt")
+                            @if (Model.ExpiryDate < DateTime.Now)
+                            {
+                                <span class="badge bg-danger ms-2">Expired</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">
+                            <i class="fas fa-redo me-2"></i>Usage Limit:
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Model.UsageLimit time(s) per customer
+                        </dd>
+
+                        <dt class="col-sm-4">
+                            <i class="fas fa-toggle-on me-2"></i>Status:
+                        </dt>
+                        <dd class="col-sm-8">
+                            @if (Model.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Inactive</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">
+                            <i class="fas fa-clock me-2"></i>Created Date:
+                        </dt>
+                        <dd class="col-sm-8">
+                            @Model.CreatedDate.ToString("dd MMM yyyy, hh:mm tt")
+                        </dd>
+                    </dl>
+
+                    @if (ViewBag.AssignmentCount != null && ViewBag.AssignmentCount > 0)
+                    {
+                        <div class="alert alert-warning mt-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Note:</strong> This coupon has been assigned to <strong>@ViewBag.AssignmentCount</strong> customer(s).
+                            Deleting this coupon will also remove all assignments.
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Form -->
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card mt-4 border-danger">
+                <div class="card-body">
+                    <form asp-action="Delete" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" asp-for="CouponId" />
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>Yes, Delete This Coupon
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>No, Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

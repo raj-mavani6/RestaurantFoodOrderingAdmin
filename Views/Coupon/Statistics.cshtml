@@ -1,0 +1,452 @@
+@model dynamic
+@{
+    ViewData["Title"] = "Coupon Statistics & Analytics";
+
+    // Calculate overall statistics manually to avoid dynamic lambda issues
+    var totalCoupons = 0;
+    var totalAssignments = 0;
+    var totalUsed = 0;
+    decimal totalDiscount = 0;
+
+    foreach (var item in Model)
+    {
+        totalCoupons++;
+        totalAssignments += item.TotalAssigned;
+        totalUsed += item.TotalUsed;
+        totalDiscount += item.TotalDiscount;
+    }
+
+    var usageRate = totalAssignments > 0 ? (double)totalUsed / totalAssignments * 100 : 0;
+}
+
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>
+                <i class="fas fa-chart-line me-2"></i>Coupon Statistics & Analytics
+            </h2>
+            <p class="text-muted mb-0">
+                <i class="fas fa-info-circle me-1"></i>Comprehensive overview of coupon performance and usage metrics
+            </p>
+        </div>
+        <div>
+            <a href="@Url.Action("Index")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Coupons
+            </a>
+        </div>
+    </div>
+
+    <!-- Overall Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stats-card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted mb-1 small">Total Coupons</p>
+                            <h3 class="mb-0 fw-bold text-primary">@totalCoupons</h3>
+                            <small class="text-success">
+                                <i class="fas fa-ticket-alt me-1"></i>Active & Inactive
+                            </small>
+                        </div>
+                        <div class="stats-icon bg-primary bg-opacity-10 rounded-circle p-3">
+                            <i class="fas fa-ticket-alt text-primary fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stats-card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted mb-1 small">Total Assignments</p>
+                            <h3 class="mb-0 fw-bold text-info">@totalAssignments</h3>
+                            <small class="text-success">
+                                <i class="fas fa-user-tag me-1"></i>To Customers
+                            </small>
+                        </div>
+                        <div class="stats-icon bg-info bg-opacity-10 rounded-circle p-3">
+                            <i class="fas fa-user-tag text-info fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stats-card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted mb-1 small">Coupons Used</p>
+                            <h3 class="mb-0 fw-bold text-success">@totalUsed</h3>
+                            <small class="text-success">
+                                <i class="fas fa-check-circle me-1"></i>@usageRate.ToString("F1")% Usage Rate
+                            </small>
+                        </div>
+                        <div class="stats-icon bg-success bg-opacity-10 rounded-circle p-3">
+                            <i class="fas fa-check-circle text-success fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card stats-card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <p class="text-muted mb-1 small">Total Discount Given</p>
+                            <h3 class="mb-0 fw-bold text-warning">₹@totalDiscount.ToString("N2")</h3>
+                            <small class="text-success">
+                                <i class="fas fa-rupee-sign me-1"></i>Revenue Impact
+                            </small>
+                        </div>
+                        <div class="stats-icon bg-warning bg-opacity-10 rounded-circle p-3">
+                            <i class="fas fa-rupee-sign text-warning fs-4"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Chart -->
+    <div class="row mb-4">
+        <div class="col-lg-8 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Coupon Performance Overview
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4 mb-3">
+                            <div class="p-3 border-end">
+                                <h2 class="text-primary mb-2">@usageRate.ToString("F1")%</h2>
+                                <p class="text-muted mb-0 small">Overall Usage Rate</p>
+                                <div class="progress mt-2" style="height: 8px;">
+                                    <div class="progress-bar bg-primary" style="width: @usageRate%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="p-3 border-end">
+                                <h2 class="text-success mb-2">@((totalAssignments - totalUsed))</h2>
+                                <p class="text-muted mb-0 small">Unused Coupons</p>
+                                <small class="text-muted">Available for customers</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <div class="p-3">
+                                <h2 class="text-info mb-2">₹@((totalAssignments > 0 ? totalDiscount / totalUsed : 0).ToString("F2"))</h2>
+                                <p class="text-muted mb-0 small">Avg. Discount/Use</p>
+                                <small class="text-muted">Per coupon used</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>Quick Insights
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-3">
+                            <i class="fas fa-chart-line text-success me-2"></i>
+                            <strong>@totalUsed</strong> coupons successfully redeemed
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-clock text-warning me-2"></i>
+                            <strong>@((totalAssignments - totalUsed))</strong> coupons still pending use
+                        </li>
+                        <li class="mb-3">
+                            <i class="fas fa-percentage text-info me-2"></i>
+                            Average usage rate: <strong>@usageRate.ToString("F1")%</strong>
+                        </li>
+                        <li class="mb-0">
+                            <i class="fas fa-rupee-sign text-danger me-2"></i>
+                            Total discount impact: <strong>₹@totalDiscount.ToString("N2")</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Individual Coupon Statistics Table -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-table me-2"></i>Individual Coupon Performance
+                </h5>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="exportTableToCSV('coupon-stats.csv')">
+                        <i class="fas fa-download me-1"></i>Export CSV
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0" id="statsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th>
+                                <i class="fas fa-ticket-alt me-1"></i>Coupon Code
+                            </th>
+                            <th>
+                                <i class="fas fa-tag me-1"></i>Discount
+                            </th>
+                            <th>
+                                <i class="fas fa-calendar-alt me-1"></i>Validity
+                            </th>
+                            <th class="text-center">
+                                <i class="fas fa-user-tag me-1"></i>Assigned
+                            </th>
+                            <th class="text-center">
+                                <i class="fas fa-check-circle me-1"></i>Used
+                            </th>
+                            <th class="text-center">
+                                <i class="fas fa-percentage me-1"></i>Usage %
+                            </th>
+                            <th class="text-end">
+                                <i class="fas fa-rupee-sign me-1"></i>Total Discount
+                            </th>
+                            <th class="text-center">
+                                <i class="fas fa-signal me-1"></i>Status
+                            </th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            var coupon = item.Coupon;
+                            var assigned = item.TotalAssigned;
+                            var used = item.TotalUsed;
+                            var discountGiven = item.TotalDiscount;
+                            var usagePercent = assigned > 0 ? (double)used / assigned * 100 : 0;
+                            var isActive = coupon.IsActive && coupon.ExpiryDate >= DateTime.Now;
+                            var isExpired = coupon.ExpiryDate < DateTime.Now;
+
+                            <tr>
+                                <td>
+                                    <strong class="text-primary">@coupon.CouponCode</strong>
+                                    <br>
+                                    <small class="text-muted">@coupon.Description</small>
+                                </td>
+                                <td>
+                                    @if (coupon.DiscountType == "Percentage")
+                                    {
+                                        <span class="badge bg-success">@coupon.DiscountValue% OFF</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-info">₹@coupon.DiscountValue OFF</span>
+                                    }
+                                    @if (coupon.MinimumOrderAmount > 0)
+                                    {
+                                        <br>
+                                        <small class="text-muted">Min: ₹@coupon.MinimumOrderAmount</small>
+                                    }
+                                </td>
+                                <td>
+                                    <small>
+                                        <i class="fas fa-calendar-check text-success me-1"></i>@coupon.StartDate.ToString("dd MMM yyyy")
+                                        <br>
+                                        <i class="fas fa-calendar-times text-danger me-1"></i>@coupon.ExpiryDate.ToString("dd MMM yyyy")
+                                    </small>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-primary rounded-pill">@assigned</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-success rounded-pill">@used</span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <span class="me-2"><strong>@usagePercent.ToString("F0")%</strong></span>
+                                        <div class="progress" style="width: 60px; height: 8px;">
+                                            <div class="progress-bar @(usagePercent >= 50 ? "bg-success" : usagePercent >= 25 ? "bg-warning" : "bg-danger")"
+                                                 style="width: @usagePercent%"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    <strong class="text-warning">₹@discountGiven.ToString("N2")</strong>
+                                </td>
+                                <td class="text-center">
+                                    @if (isExpired)
+                                    {
+                                        <span class="badge bg-secondary">
+                                            <i class="fas fa-clock me-1"></i>Expired
+                                        </span>
+                                    }
+                                    else if (isActive)
+                                    {
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check-circle me-1"></i>Active
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-warning">
+                                            <i class="fas fa-pause-circle me-1"></i>Inactive
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <a href="@Url.Action("Assignments", new { id = coupon.CouponId })"
+                                       class="btn btn-sm btn-outline-info"
+                                       title="View Assignments">
+                                        <i class="fas fa-list"></i>
+                                    </a>
+                                    <a href="@Url.Action("Edit", new { id = coupon.CouponId })"
+                                       class="btn btn-sm btn-outline-primary"
+                                       title="Edit Coupon">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <th colspan="3" class="text-end">TOTALS:</th>
+                            <th class="text-center">
+                                <strong class="text-primary">@totalAssignments</strong>
+                            </th>
+                            <th class="text-center">
+                                <strong class="text-success">@totalUsed</strong>
+                            </th>
+                            <th class="text-center">
+                                <strong class="text-info">@usageRate.ToString("F1")%</strong>
+                            </th>
+                            <th class="text-end">
+                                <strong class="text-warning">₹@totalDiscount.ToString("N2")</strong>
+                            </th>
+                            <th colspan="2"></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    @if (totalCoupons == 0)
+    {
+        <div class="text-center py-5">
+            <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+            <h5 class="text-muted">No coupon data available</h5>
+            <p class="text-muted">Create and assign coupons to see statistics</p>
+            <a href="@Url.Action("Create")" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Create First Coupon
+            </a>
+        </div>
+    }
+</div>
+
+<style>
+    .stats-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        }
+
+    .stats-icon {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .table th {
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #dee2e6;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    .progress {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        transition: width 0.6s ease;
+    }
+
+    .card-header {
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .badge {
+        font-weight: 500;
+        padding: 0.35em 0.65em;
+    }
+</style>
+
+<script>
+    // Export table to CSV
+    function exportTableToCSV(filename) {
+        var csv = [];
+        var rows = document.querySelectorAll("#statsTable tr");
+
+        for (var i = 0; i < rows.length; i++) {
+            var row = [], cols = rows[i].querySelectorAll("td, th");
+
+            for (var j = 0; j < cols.length - 1; j++) { // Skip last column (Actions)
+                var text = cols[j].innerText.replace(/\n/g, ' ').replace(/,/g, ';');
+                row.push(text);
+            }
+
+            csv.push(row.join(","));
+        }
+
+        // Download CSV
+        var csvFile = new Blob([csv.join("\n")], { type: "text/csv" });
+        var downloadLink = document.createElement("a");
+        downloadLink.download = filename;
+        downloadLink.href = window.URL.createObjectURL(csvFile);
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    }
+
+    // Auto-refresh every 5 minutes
+    setTimeout(function() {
+        location.reload();
+    }, 300000);
+
+    // Initialize tooltips
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+        tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
+</script>

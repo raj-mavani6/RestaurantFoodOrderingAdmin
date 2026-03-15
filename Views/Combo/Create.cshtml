@@ -1,0 +1,175 @@
+@model RestaurantFoodOrderingAdmin.Models.Combo
+@{
+    ViewData["Title"] = "Create Combo";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-plus-circle me-2"></i>Create New Combo
+        </h2>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to List
+        </a>
+    </div>
+
+    <!-- Create Form -->
+    <div class="card">
+        <div class="card-body">
+            <form asp-action="Create" method="post">
+                <div class="row">
+                    <!-- Left Column -->
+                    <div class="col-md-6">
+                        <!-- Combo Name -->
+                        <div class="mb-3">
+                            <label asp-for="ComboName" class="form-label"></label>
+                            <input asp-for="ComboName" class="form-control" placeholder="Enter combo name">
+                            <span asp-validation-for="ComboName" class="text-danger"></span>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label"></label>
+                            <textarea asp-for="Description" class="form-control" rows="3" placeholder="Enter combo description"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <!-- Original Price -->
+                        <div class="mb-3">
+                            <label asp-for="OriginalPrice" class="form-label"></label>
+                            <input asp-for="OriginalPrice" class="form-control" type="number" step="0.01" placeholder="0.00">
+                            <span asp-validation-for="OriginalPrice" class="text-danger"></span>
+                        </div>
+
+                        <!-- Combo Price -->
+                        <div class="mb-3">
+                            <label asp-for="ComboPrice" class="form-label"></label>
+                            <input asp-for="ComboPrice" class="form-control" type="number" step="0.01" placeholder="0.00">
+                            <span asp-validation-for="ComboPrice" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="col-md-6">
+                        <!-- Image URL -->
+                        <div class="mb-3">
+                            <label asp-for="ImageUrl" class="form-label"></label>
+                            <input asp-for="ImageUrl" class="form-control" placeholder="Enter image URL">
+                            <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                        </div>
+
+                        <!-- Valid Until -->
+                        <div class="mb-3">
+                            <label asp-for="ValidUntil" class="form-label"></label>
+                            <input asp-for="ValidUntil" class="form-control" type="date">
+                            <span asp-validation-for="ValidUntil" class="text-danger"></span>
+                        </div>
+
+                        <!-- Is Available -->
+                        <div class="mb-3 form-check">
+                            <input asp-for="IsAvailable" class="form-check-input" type="checkbox">
+                            <label asp-for="IsAvailable" class="form-check-label"></label>
+                        </div>
+
+                        <!-- Is Veg -->
+                        <div class="mb-3 form-check">
+                            <input asp-for="IsVeg" class="form-check-input" type="checkbox">
+                            <label asp-for="IsVeg" class="form-check-label"></label>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Combo Items Section -->
+                <h4 class="mb-3">
+                    <i class="fas fa-utensils me-2"></i>Add Food Items to Combo
+                </h4>
+
+                <div id="comboItemsContainer">
+                    <div class="row mb-3 combo-item-row">
+                        <div class="col-md-8">
+                            <label class="form-label">Food Item</label>
+                            <select name="selectedFoodIds" class="form-select">
+                                <option value="0">-- Select Food Item --</option>
+                                @foreach (var item in (SelectList)ViewBag.FoodItems)
+                                {
+                                    <option value="@item.Value">@item.Text</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Quantity</label>
+                            <input type="number" name="quantities" class="form-control" value="1" min="1">
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="button" class="btn btn-danger btn-sm" onclick="removeComboItem(this)">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-success btn-sm mb-4" onclick="addComboItem()">
+                    <i class="fas fa-plus me-2"></i>Add Another Item
+                </button>
+
+                <hr class="my-4">
+
+                <!-- Submit Buttons -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Create Combo
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let foodItemsOptions = `@Html.Raw(string.Join("", ((SelectList)ViewBag.FoodItems).Select(i => $"<option value='{i.Value}'>{i.Text}</option>")))`;
+
+        function addComboItem() {
+            const container = document.getElementById('comboItemsContainer');
+            const newRow = document.createElement('div');
+            newRow.className = 'row mb-3 combo-item-row';
+            newRow.innerHTML = `
+                <div class="col-md-8">
+                    <label class="form-label">Food Item</label>
+                    <select name="selectedFoodIds" class="form-select">
+                        <option value="0">-- Select Food Item --</option>
+                        ${foodItemsOptions}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Quantity</label>
+                    <input type="number" name="quantities" class="form-control" value="1" min="1">
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="button" class="btn btn-danger btn-sm" onclick="removeComboItem(this)">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            container.appendChild(newRow);
+        }
+
+        function removeComboItem(button) {
+            const rows = document.querySelectorAll('.combo-item-row');
+            if (rows.length > 1) {
+                button.closest('.combo-item-row').remove();
+            } else {
+                alert('At least one item is required in a combo');
+            }
+        }
+    </script>
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

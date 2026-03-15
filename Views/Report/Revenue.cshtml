@@ -1,0 +1,256 @@
+@model List<RestaurantFoodOrderingAdmin.Models.Order>
+@{
+    ViewData["Title"] = "Revenue Reports";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2>
+                        <i class="fas fa-chart-line me-2"></i>Revenue Reports
+                    </h2>
+                    <p class="text-muted">Revenue analysis by time period</p>
+                </div>
+                <div>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Period Filter -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="btn-group" role="group">
+                <a href="@Url.Action("Revenue", new { period = "today" })" class="btn @(ViewBag.Period == "today" ? "btn-primary" : "btn-outline-primary")">
+                    <i class="fas fa-calendar-day me-1"></i>Today
+                </a>
+                <a href="@Url.Action("Revenue", new { period = "week" })" class="btn @(ViewBag.Period == "week" ? "btn-primary" : "btn-outline-primary")">
+                    <i class="fas fa-calendar-week me-1"></i>This Week
+                </a>
+                <a href="@Url.Action("Revenue", new { period = "month" })" class="btn @(ViewBag.Period == "month" ? "btn-primary" : "btn-outline-primary")">
+                    <i class="fas fa-calendar-alt me-1"></i>This Month
+                </a>
+                <a href="@Url.Action("Revenue", new { period = "year" })" class="btn @(ViewBag.Period == "year" ? "btn-primary" : "btn-outline-primary")">
+                    <i class="fas fa-calendar me-1"></i>This Year
+                </a>
+                <a href="@Url.Action("Revenue", new { period = "all" })" class="btn @(ViewBag.Period == "all" ? "btn-primary" : "btn-outline-primary")">
+                    <i class="fas fa-history me-1"></i>All Time
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revenue Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Total Orders</h6>
+                    <h3 class="mb-0">@ViewBag.TotalOrders</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Total Revenue</h6>
+                    <h3 class="mb-0">₹@ViewBag.TotalRevenue.ToString("N2")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Total Discount</h6>
+                    <h3 class="mb-0">₹@ViewBag.TotalDiscount.ToString("N2")</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Net Revenue</h6>
+                    <h3 class="mb-0">₹@ViewBag.NetRevenue.ToString("N2")</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Average Order Value -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-0">Average Order Value</h6>
+                        </div>
+                        <div>
+                            <h3 class="mb-0 text-success">₹@ViewBag.AverageOrderValue.ToString("N2")</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category-wise Revenue -->
+    @if (ViewBag.CategoryRevenue != null)
+    {
+        var categoryRevenue = (List<dynamic>)ViewBag.CategoryRevenue;
+        if (categoryRevenue.Any())
+        {
+            <div class="card mb-4">
+                <div class="card-header bg-white" style="border-bottom: 2px solid #f4f4f4;">
+                    <h5 class="mb-0 text-dark font-weight-bold">
+                        <i class="fas fa-th-large me-2 text-primary"></i>Category-wise Revenue
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Category Name</th>
+                                    <th class="text-center">Items Sold (Qty)</th>
+                                    <th class="text-end">Total Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var cat in categoryRevenue)
+                                {
+                                    <tr>
+                                        <td><strong>@cat.CategoryName</strong></td>
+                                        <td class="text-center">
+                                            <span class="badge bg-secondary">@cat.OrderItemCount</span>
+                                        </td>
+                                        <td class="text-end">
+                                            <strong>₹@cat.Revenue.ToString("N2")</strong>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <th>Total:</th>
+                                    <th class="text-center">@categoryRevenue.Sum(x => (int)x.OrderItemCount)</th>
+                                    <th class="text-end">₹@categoryRevenue.Sum(x => (decimal)x.Revenue).ToString("N2")</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+    <!-- Revenue by Date -->
+    @if (Model != null && Model.Any())
+    {
+        var revenueByDate = Model
+        .GroupBy(o => o.OrderDate.Date)
+        .Select(g => new
+        {
+            Date = g.Key,
+            Orders = g.Count(),
+            Revenue = g.Sum(o => o.TotalAmount),
+            Discount = g.Sum(o => o.DiscountAmount ?? 0),
+            NetRevenue = g.Sum(o => o.TotalAmount - (o.DiscountAmount ?? 0))
+        })
+        .OrderByDescending(x => x.Date)
+        .ToList();
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Daily Revenue Breakdown</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Orders</th>
+                                <th>Total Revenue</th>
+                                <th>Discount</th>
+                                <th>Net Revenue</th>
+                                <th>Avg Order Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in revenueByDate)
+                            {
+                                var avgOrderValue = item.Orders > 0 ? item.Revenue / item.Orders : 0;
+                                <tr>
+                                    <td><strong>@item.Date.ToString("dd MMM yyyy")</strong></td>
+                                    <td>@item.Orders</td>
+                                    <td>₹@item.Revenue.ToString("F2")</td>
+                                    <td class="text-danger">-₹@item.Discount.ToString("F2")</td>
+                                    <td class="text-success"><strong>₹@item.NetRevenue.ToString("F2")</strong></td>
+                                    <td>₹@avgOrderValue.ToString("F2")</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <th>Totals:</th>
+                                <th>@revenueByDate.Sum(x => x.Orders)</th>
+                                <th>₹@revenueByDate.Sum(x => x.Revenue).ToString("F2")</th>
+                                <th class="text-danger">-₹@revenueByDate.Sum(x => x.Discount).ToString("F2")</th>
+                                <th class="text-success">₹@revenueByDate.Sum(x => x.NetRevenue).ToString("F2")</th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Revenue Insights -->
+        <div class="card mt-4 mb-4">
+            <div class="card-header bg-white" style="border-bottom: 2px solid #f4f4f4;">
+                <h5 class="mb-0 text-dark font-weight-bold">
+                    <i class="fas fa-lightbulb me-2 text-warning"></i>Revenue Insights
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6 class="text-muted">Best Day</h6>
+                        @{
+                            var bestDay = revenueByDate.OrderByDescending(x => x.NetRevenue).FirstOrDefault();
+                            if (bestDay != null)
+                            {
+                                <p class="mb-0"><strong>@bestDay.Date.ToString("dd MMM yyyy")</strong></p>
+                                <small class="text-success">₹@(((decimal)bestDay.NetRevenue).ToString("F2"))</small>
+                            }
+                        }
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-muted">Average Daily Revenue</h6>
+                        <p class="mb-0"><strong>₹@(((decimal)revenueByDate.Average(x => x.NetRevenue)).ToString("F2"))</strong></p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="text-muted">Average Orders Per Day</h6>
+                        <p class="mb-0"><strong>@revenueByDate.Average(x => x.Orders).ToString("F1")</strong></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle me-2"></i>No revenue data available for the selected period.
+                </div>
+            </div>
+        </div>
+    }
+</div>

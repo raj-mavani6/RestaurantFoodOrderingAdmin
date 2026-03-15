@@ -1,0 +1,148 @@
+@model IEnumerable<RestaurantFoodOrderingAdmin.Models.Order>
+@{
+    ViewData["Title"] = "Manage Orders";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-receipt me-2"></i>Manage Orders
+        </h2>
+        <div class="d-flex gap-3">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search orders..." 
+                   style="width: 250px;" onkeyup="searchTable('searchInput', 'ordersTable')">
+            <select id="statusFilter" class="form-select" style="width: 180px;" onchange="filterByStatus()">
+                <option value="">All Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Preparing">Preparing</option>
+                <option value="Out for Delivery">Out for Delivery</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Cancelled">Cancelled</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Orders Table -->
+    <div class="card">
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover" id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Items</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Order Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model)
+                        {
+                            <tr>
+                                <td><strong>#@order.OrderId</strong></td>
+                                <td>
+                                    @order.Customer?.FullName
+                                    <br>
+                                    <small class="text-muted">@order.Customer?.Phone</small>
+                                </td>
+                                <td>@order.OrderItems?.Count() items</td>
+                                <td><strong>₹@order.TotalAmount</strong></td>
+                                <td>
+                                    @if (order.Status == "Pending")
+                                    {
+                                        <span class="badge bg-pending">@order.Status</span>
+                                    }
+                                    else if (order.Status == "Confirmed")
+                                    {
+                                        <span class="badge bg-confirmed">@order.Status</span>
+                                    }
+                                    else if (order.Status == "Preparing")
+                                    {
+                                        <span class="badge bg-preparing">@order.Status</span>
+                                    }
+                                    else if (order.Status == "Delivered")
+                                    {
+                                        <span class="badge bg-delivered">@order.Status</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-cancelled">@order.Status</span>
+                                    }
+                                </td>
+                                <td>
+                                    @order.OrderDate.ToString("dd MMM yyyy")
+                                    <br>
+                                    <small class="text-muted">@order.OrderDate.ToString("hh:mm tt")</small>
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Details", new { id = order.OrderId })" 
+                                       class="btn btn-sm btn-primary" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="@Url.Action("Delete", new { id = order.OrderId })" 
+                                       class="btn btn-sm btn-danger" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-receipt fa-5x text-muted mb-3"></i>
+                <h4>No Orders Found</h4>
+                <p class="text-muted">Orders will appear here once customers place them.</p>
+            </div>
+        }
+    </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function filterByStatus() {
+        var statusFilter = document.getElementById('statusFilter').value.toLowerCase();
+        var table = document.getElementById('ordersTable');
+        var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        
+        for (var i = 0; i < rows.length; i++) {
+            var statusCell = rows[i].getElementsByTagName('td')[4]; // Status is in 5th column (index 4)
+            if (statusCell) {
+                var statusText = statusCell.textContent || statusCell.innerText;
+                if (statusFilter === '' || statusText.toLowerCase().includes(statusFilter)) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    }
+</script>
+}

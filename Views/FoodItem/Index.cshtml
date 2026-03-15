@@ -1,0 +1,179 @@
+@model IEnumerable<RestaurantFoodOrderingAdmin.Models.FoodItem>
+@{
+    ViewData["Title"] = "Manage Food Items";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <h2>
+            <i class="fas fa-utensils me-2"></i>Manage Food Items
+        </h2>
+        <div class="d-flex gap-3 align-items-center flex-wrap">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search food items..." 
+                   style="width: 200px;" onkeyup="filterFoodItems()">
+            <select id="typeFilter" class="form-select" style="width: 150px;" onchange="filterFoodItems()">
+                <option value="">All Type</option>
+                <option value="veg">Vegetarian</option>
+                <option value="non-veg">Non-Vegetarian</option>
+            </select>
+            <select id="statusFilter" class="form-select" style="width: 160px;" onchange="filterFoodItems()">
+                <option value="">All Status</option>
+                <option value="Available">Available</option>
+                <option value="Unavailable">Unavailable</option>
+            </select>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Add New Food Item
+            </a>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Food Items Table -->
+    <div class="card">
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover" id="foodItemsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Image</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.FoodId</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                    {
+                                        <img src="@item.ImageUrl" alt="@item.FoodName" 
+                                             style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                                    }
+                                </td>
+                                <td>@item.FoodName</td>
+                                <td>@item.Category?.CategoryName</td>
+                                <td>₹@item.Price</td>
+                                <td>
+                                    @if (item.IsVeg)
+                                    {
+                                        <span class="veg-icon" title="Vegetarian"><span class="veg-circle"></span></span>
+                                    }
+                                    else
+                                    {
+                                        <span class="non-veg-icon" title="Non-Vegetarian"><span class="non-veg-circle"></span></span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.IsAvailable)
+                                    {
+                                        <span class="badge bg-success">Available</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Unavailable</span>
+                                    }
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Edit", new { id = item.FoodId })" 
+                                       class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="@Url.Action("Delete", new { id = item.FoodId })" 
+                                       class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-utensils fa-5x text-muted mb-3"></i>
+                <h4>No Food Items Found</h4>
+                <p class="text-muted">Start by creating your first food item.</p>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Add New Food Item
+                </a>
+            </div>
+        }
+    </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function filterFoodItems() {
+        var searchInput = document.getElementById('searchInput').value.toLowerCase();
+        var typeFilter = document.getElementById('typeFilter').value.toLowerCase();
+        var statusFilter = document.getElementById('statusFilter').value.toLowerCase();
+        var table = document.getElementById('foodItemsTable');
+        var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        
+        for (var i = 0; i < rows.length; i++) {
+            var nameCell = rows[i].getElementsByTagName('td')[2]; // Name column (index 2)
+            var typeCell = rows[i].getElementsByTagName('td')[5]; // Type column (index 5)
+            var statusCell = rows[i].getElementsByTagName('td')[6]; // Status column (index 6)
+            
+            var showRow = true;
+            
+            // Search filter
+            if (nameCell && searchInput !== '') {
+                var nameText = nameCell.textContent || nameCell.innerText;
+                if (!nameText.toLowerCase().includes(searchInput)) {
+                    showRow = false;
+                }
+            }
+            
+            // Type filter (check title attribute for veg/non-veg)
+            if (typeCell && typeFilter !== '' && showRow) {
+                var typeSpan = typeCell.querySelector('span');
+                var typeTitle = typeSpan ? typeSpan.getAttribute('title')?.toLowerCase() || '' : '';
+                if (typeFilter === 'veg' && !typeTitle.includes('vegetarian')) {
+                    showRow = false;
+                } else if (typeFilter === 'non-veg' && !typeTitle.includes('non-vegetarian')) {
+                    showRow = false;
+                }
+            }
+            
+            // Status filter
+            if (statusCell && statusFilter !== '' && showRow) {
+                var statusText = statusCell.textContent || statusCell.innerText;
+                if (!statusText.toLowerCase().includes(statusFilter.toLowerCase())) {
+                    showRow = false;
+                }
+            }
+            
+            rows[i].style.display = showRow ? '' : 'none';
+        }
+    }
+</script>
+}

@@ -1,0 +1,96 @@
+@model RestaurantFoodOrderingAdmin.Models.Customer
+@{
+    ViewData["Title"] = "Customer Details";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-user me-2"></i>Customer Details
+        </h2>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to List
+        </a>
+    </div>
+
+    <!-- Customer Content -->
+    <div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Customer Information</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Customer ID:</dt>
+                    <dd class="col-sm-8">@Model.CustomerId</dd>
+
+                    <dt class="col-sm-4">Full Name:</dt>
+                    <dd class="col-sm-8">@Model.FullName</dd>
+
+                    <dt class="col-sm-4">Email:</dt>
+                    <dd class="col-sm-8">@Model.Email</dd>
+
+                    <dt class="col-sm-4">Phone:</dt>
+                    <dd class="col-sm-8">@Model.Phone</dd>
+
+                    <dt class="col-sm-4">Address:</dt>
+                    <dd class="col-sm-8">@Model.Address</dd>
+
+                    <dt class="col-sm-4">Status:</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.IsActive)
+                        {
+                            <span class="badge bg-success">Active</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Inactive</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4">Joined Date:</dt>
+                    <dd class="col-sm-8">@Model.CreatedDate.ToString("dd MMM yyyy, hh:mm tt")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6>Total Orders</h6>
+                    <h3 class="text-primary-custom">@ViewBag.OrderCount</h3>
+                </div>
+                <hr>
+                <div>
+                    <h6>Total Spent</h6>
+                    <h3 class="text-success">₹@ViewBag.TotalSpent</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Actions</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" asp-action="ToggleStatus" asp-route-id="@Model.CustomerId">
+                    <button type="submit" class="btn btn-warning w-100 mb-2">
+                        <i class="fas fa-power-off me-2"></i>
+                        @(Model.IsActive ? "Deactivate" : "Activate") Customer
+                    </button>
+                </form>
+                <a href="@Url.Action("Delete", new { id = Model.CustomerId })" class="btn btn-danger w-100">
+                    <i class="fas fa-trash me-2"></i>Delete Customer
+                </a>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>

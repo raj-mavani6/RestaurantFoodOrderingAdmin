@@ -1,0 +1,189 @@
+@model RestaurantFoodOrderingAdmin.Models.Coupon
+@{
+    ViewData["Title"] = "Create New Coupon";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-plus me-2"></i>Create New Coupon
+        </h2>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to List
+        </a>
+    </div>
+
+    <!-- Error Messages -->
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Create Form Card -->
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row">
+                            <!-- Coupon Code -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-tag me-1"></i>Coupon Code *
+                                </label>
+                                <input asp-for="CouponCode" class="form-control"
+                                       placeholder="e.g., WELCOME10" required maxlength="20"
+                                       style="text-transform: uppercase;">
+                                <small class="text-muted">Unique code customers will use</small>
+                                <span asp-validation-for="CouponCode" class="text-danger"></span>
+                            </div>
+
+                            <!-- Discount Type -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-percent me-1"></i>Discount Type *
+                                </label>
+                                <select asp-for="DiscountType" class="form-select" required>
+                                    <option value="Percentage">Percentage (%)</option>
+                                    <option value="Fixed">Fixed Amount (₹)</option>
+                                </select>
+                                <span asp-validation-for="DiscountType" class="text-danger"></span>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-align-left me-1"></i>Description *
+                                </label>
+                                <textarea asp-for="Description" class="form-control" rows="2"
+                                          placeholder="Brief description of the offer" required></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+
+                            <!-- Discount Value -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-gift me-1"></i>Discount Value *
+                                </label>
+                                <input asp-for="DiscountValue" type="number" class="form-control"
+                                       step="0.01" min="0" placeholder="e.g., 10 or 50" required>
+                                <small class="text-muted">For %, enter 10 for 10%. For Fixed, enter amount</small>
+                                <span asp-validation-for="DiscountValue" class="text-danger"></span>
+                            </div>
+
+                            <!-- Max Discount Amount -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-coins me-1"></i>Max Discount Amount (Optional)
+                                </label>
+                                <input asp-for="MaxDiscountAmount" type="number" class="form-control"
+                                       step="0.01" min="0" placeholder="e.g., 100">
+                                <small class="text-muted">Maximum discount cap for percentage type</small>
+                                <span asp-validation-for="MaxDiscountAmount" class="text-danger"></span>
+                            </div>
+
+                            <!-- Minimum Order Amount -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-shopping-cart me-1"></i>Minimum Order Amount *
+                                </label>
+                                <input asp-for="MinimumOrderAmount" type="number" class="form-control"
+                                       step="0.01" min="0" value="0" required>
+                                <small class="text-muted">Minimum cart value to apply coupon</small>
+                                <span asp-validation-for="MinimumOrderAmount" class="text-danger"></span>
+                            </div>
+
+                            <!-- Usage Limit -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-redo me-1"></i>Usage Limit (Per Customer) *
+                                </label>
+                                <input asp-for="UsageLimit" type="number" class="form-control"
+                                       min="1" value="1" required>
+                                <small class="text-muted">How many times per customer</small>
+                                <span asp-validation-for="UsageLimit" class="text-danger"></span>
+                            </div>
+
+                            <!-- Start Date -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-calendar-check me-1"></i>Start Date *
+                                </label>
+                                <input asp-for="StartDate" asp-format="{0:yyyy-MM-ddTHH:mm}" type="datetime-local" class="form-control" required>
+                                <span asp-validation-for="StartDate" class="text-danger"></span>
+                            </div>
+
+                            <!-- Expiry Date -->
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-calendar-times me-1"></i>Expiry Date *
+                                </label>
+                                <input asp-for="ExpiryDate" asp-format="{0:yyyy-MM-ddTHH:mm}" type="datetime-local" class="form-control" required>
+                                <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+                            </div>
+
+                            <!-- Is Active -->
+                            <div class="col-md-12 mb-3">
+                                <div class="form-check form-switch">
+                                    <input asp-for="IsActive" class="form-check-input" type="checkbox" checked>
+                                    <label class="form-check-label">
+                                        <i class="fas fa-toggle-on me-1"></i>Active (Enable coupon immediately)
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Create Coupon
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Set default start date to now
+    document.addEventListener('DOMContentLoaded', function() {
+        const startDateInput = document.querySelector('input[name="StartDate"]');
+        if (!startDateInput.value) {
+            const now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            startDateInput.value = now.toISOString().slice(0, 16);
+        }
+
+        // Set default expiry date to 30 days from now
+        const expiryDateInput = document.querySelector('input[name="ExpiryDate"]');
+        if (!expiryDateInput.value) {
+            const expiry = new Date();
+            expiry.setDate(expiry.getDate() + 30);
+            expiry.setMinutes(expiry.getMinutes() - expiry.getTimezoneOffset());
+            expiryDateInput.value = expiry.toISOString().slice(0, 16);
+        }
+
+        // Auto uppercase coupon code
+        const codeInput = document.querySelector('input[name="CouponCode"]');
+        codeInput.addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+    });
+</script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,357 @@
+@model List<RestaurantFoodOrderingAdmin.Models.FoodItem>
+@{
+    ViewData["Title"] = "Food Item Reports";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2>
+                        <i class="fas fa-utensils me-2"></i>Food Item Reports
+                    </h2>
+                    <p class="text-muted">Menu performance and popularity analysis</p>
+                </div>
+                <div>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Reports
+                    </a>
+                    <a href="@Url.Action("ExportFoodItemsCSV")" class="btn btn-warning">
+                        <i class="fas fa-download me-1"></i>Export CSV
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Items</h6>
+                    <h3 class="mb-0">@ViewBag.TotalItems</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="text-muted">Available Items</h6>
+                    <h3 class="mb-0 text-success">@ViewBag.AvailableItems</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="text-muted">Veg Items</h6>
+                    <h3 class="mb-0 text-success">@ViewBag.VegItems</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="text-muted">Non-Veg Items</h6>
+                    <h3 class="mb-0 text-danger">@ViewBag.NonVegItems</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Best Selling Items -->
+    @if (ViewBag.BestSellingItems != null)
+    {
+        var bestSellingItems = (List<dynamic>)ViewBag.BestSellingItems;
+        if (bestSellingItems.Any())
+        {
+            <div class="card mb-4">
+                <div class="card-header bg-white" style="border-bottom: 2px solid #f4f4f4;">
+                    <h5 class="mb-0 text-dark font-weight-bold">
+                        <i class="fas fa-fire me-2 text-danger"></i>Best Selling Items
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Type</th>
+                                    <th>Avg Rating</th>
+                                    <th>Status</th>
+                                    <th>Total Sold</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in bestSellingItems)
+                                {
+                                    <tr>
+                                        <td><strong>#@item.FoodId</strong></td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty((string)item.ImageUrl))
+                                            {
+                                                <img src="@item.ImageUrl" alt="@item.FoodName" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                                            }
+                                            else
+                                            {
+                                                <div style="width: 50px; height: 50px; background: #ddd; border-radius: 5px; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="fas fa-utensils text-muted"></i>
+                                                </div>
+                                            }
+                                        </td>
+                                        <td><strong>@item.FoodName</strong></td>
+                                        <td>@item.CategoryName</td>
+                                        <td><strong class="text-success">₹@item.Price.ToString("F2")</strong></td>
+                                        <td>
+                                            @if (item.IsVeg)
+                                            {
+                                                <span class="badge bg-success">
+                                                    <i class="fas fa-leaf me-1"></i>Veg
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">
+                                                    <i class="fas fa-drumstick-bite me-1"></i>Non-Veg
+                                                </span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (item.AvgRating > 0)
+                                            {
+                                                <span class="text-warning">
+                                                    <i class="fas fa-star"></i> @item.AvgRating.ToString("F1")
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">N/A</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            @if (item.IsAvailable)
+                                            {
+                                                <span class="badge bg-success">Available</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Out of Stock</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary fs-6">@item.TotalSold</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+    <!-- Category-wise Sales -->
+    @if (ViewBag.CategorySales != null)
+    {
+        var categorySales = (List<dynamic>)ViewBag.CategorySales;
+        if (categorySales.Any())
+        {
+            <div class="card mb-4">
+                <div class="card-header bg-white" style="border-bottom: 2px solid #f4f4f4;">
+                    <h5 class="mb-0 text-dark font-weight-bold">
+                        <i class="fas fa-th-list me-2 text-info"></i>Category-wise Sales
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Category Name</th>
+                                    <th class="text-center">Total Quantity Sold</th>
+                                    <th class="text-end">Total Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var cat in categorySales)
+                                {
+                                    <tr>
+                                        <td><strong>@cat.CategoryName</strong></td>
+                                        <td class="text-center">
+                                            <span class="badge bg-secondary">@cat.TotalSold</span>
+                                        </td>
+                                        <td class="text-end">
+                                            <strong>₹@cat.TotalRevenue.ToString("N2")</strong>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+    <!-- Food Items Table -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Food Item Details</h5>
+        </div>
+        <div class="card-body">
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Image</th>
+                                <th>Name</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Type</th>
+                                <th>Reviews</th>
+                                <th>Avg Rating</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                var foodReviews = (Dictionary<int, List<RestaurantFoodOrderingAdmin.Models.Review>>)ViewBag.FoodReviews;
+                                var reviews = foodReviews.ContainsKey(item.FoodId) ? foodReviews[item.FoodId] : new List<RestaurantFoodOrderingAdmin.Models.Review>();
+                                var reviewCount = reviews.Count;
+                                var avgRating = reviews.Any() ? reviews.Average(r => r.Rating) : 0;
+                                <tr>
+                                    <td><strong>#@item.FoodId</strong></td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                        {
+                                            <img src="@item.ImageUrl" alt="@item.FoodName" style="width: 40px; height: 40px; object-fit: cover; border-radius: 5px;">
+                                        }
+                                        else
+                                        {
+                                            <div style="width: 40px; height: 40px; background: #ddd; border-radius: 5px;"></div>
+                                        }
+                                    </td>
+                                    <td>@item.FoodName</td>
+                                    <td>@item.Category?.CategoryName</td>
+                                    <td><strong>₹@item.Price.ToString("F2")</strong></td>
+                                    <td>
+                                        @if (item.IsVeg)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-leaf me-1"></i>Veg
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-drumstick-bite me-1"></i>Non-Veg
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (reviewCount > 0)
+                                        {
+                                            <span class="badge bg-info">@reviewCount</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">0</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (avgRating > 0)
+                                        {
+                                            <span class="text-warning">
+                                                <i class="fas fa-star"></i> @avgRating.ToString("F1")
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (item.IsAvailable)
+                                        {
+                                            <span class="badge bg-success">Available</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Out of Stock</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info text-center">
+                    <i class="fas fa-info-circle me-2"></i>No food items available.
+                </div>
+            }
+        </div>
+    </div>
+
+
+    <!-- Top Rated Items -->
+    @if (Model != null && Model.Any())
+    {
+        var foodReviews = (Dictionary<int, List<RestaurantFoodOrderingAdmin.Models.Review>>)ViewBag.FoodReviews;
+        var topRatedItems = Model
+        .Where(f => foodReviews.ContainsKey(f.FoodId) && foodReviews[f.FoodId].Any())
+        .OrderByDescending(f => foodReviews[f.FoodId].Average(r => r.Rating))
+        .Take(5)
+        .ToList();
+
+        @if (topRatedItems.Any())
+        {
+            <div class="card mt-4 mb-4">
+                <div class="card-header bg-white" style="border-bottom: 2px solid #f4f4f4;">
+                    <h5 class="mb-0 text-dark font-weight-bold">
+                        <i class="fas fa-trophy me-2 text-warning"></i>Top Rated Food Items
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @foreach (var item in topRatedItems)
+                        {
+                            var reviews = foodReviews[item.FoodId];
+                            var avgRating = reviews.Average(r => r.Rating);
+                            <div class="col-md-4 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6>@item.FoodName</h6>
+                                        <p class="text-muted mb-1">
+                                            <small>@item.Category?.CategoryName</small>
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="text-warning">
+                                                <i class="fas fa-star"></i> @avgRating.ToString("F1")
+                                            </span>
+                                            <small class="text-muted">@reviews.Count reviews</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

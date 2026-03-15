@@ -1,0 +1,322 @@
+@model IEnumerable<RestaurantFoodOrderingAdmin.Models.Order>
+@{
+    ViewData["Title"] = "Payment Transactions";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-credit-card me-2"></i>Payment Transactions</h2>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card stats-card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Total Transactions</h6>
+                            <h3 class="mb-0">@ViewBag.TotalTransactions</h3>
+                        </div>
+                        <div class="stats-icon">
+                            <i class="fas fa-receipt fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stats-card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Total Revenue</h6>
+                            <h3 class="mb-0">₹@ViewBag.TotalAmount?.ToString("N2")</h3>
+                        </div>
+                        <div class="stats-icon">
+                            <i class="fas fa-rupee-sign fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card stats-card bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Paid</h6>
+                            <h3 class="mb-0">@ViewBag.PaidCount</h3>
+                        </div>
+                        <div class="stats-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card stats-card bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Pending</h6>
+                            <h3 class="mb-0">@ViewBag.PendingCount</h3>
+                        </div>
+                        <div class="stats-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="card stats-card bg-danger text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-0">Failed</h6>
+                            <h3 class="mb-0">@ViewBag.FailedCount</h3>
+                        </div>
+                        <div class="stats-icon">
+                            <i class="fas fa-times-circle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" asp-action="Index" id="filterForm">
+                <div class="row g-3">
+                    <!-- Search -->
+                    <div class="col-md-3">
+                        <label class="form-label">Search</label>
+                        <input type="text" class="form-control" name="searchTerm"
+                               value="@ViewBag.SearchTerm"
+                               placeholder="Order ID, Transaction ID, Customer...">
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div class="col-md-2">
+                        <label class="form-label">Payment Method</label>
+                        <select class="form-select" name="paymentMethod">
+                            <option value="">All Methods</option>
+                            <option value="Cash on Delivery" selected="@(ViewBag.PaymentMethod == "Cash on Delivery")">Cash on Delivery</option>
+                            <option value="Credit/Debit Card" selected="@(ViewBag.PaymentMethod == "Credit/Debit Card")">Credit/Debit Card</option>
+                            <option value="UPI" selected="@(ViewBag.PaymentMethod == "UPI")">UPI</option>
+                            <option value="Net Banking" selected="@(ViewBag.PaymentMethod == "Net Banking")">Net Banking</option>
+                        </select>
+                    </div>
+
+                    <!-- Payment Status -->
+                    <div class="col-md-2">
+                        <label class="form-label">Payment Status</label>
+                        <select class="form-select" name="paymentStatus">
+                            <option value="">All Status</option>
+                            <option value="Paid" selected="@(ViewBag.PaymentStatus == "Paid")">Paid</option>
+                            <option value="Pending" selected="@(ViewBag.PaymentStatus == "Pending")">Pending</option>
+                            <option value="Failed" selected="@(ViewBag.PaymentStatus == "Failed")">Failed</option>
+                        </select>
+                    </div>
+
+                    <!-- From Date -->
+                    <div class="col-md-2">
+                        <label class="form-label">From Date</label>
+                        <input type="date" class="form-control" name="fromDate" value="@ViewBag.FromDate">
+                    </div>
+
+                    <!-- To Date -->
+                    <div class="col-md-2">
+                        <label class="form-label">To Date</label>
+                        <input type="date" class="form-control" name="toDate" value="@ViewBag.ToDate">
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="col-md-1">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-12">
+                        <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-redo me-1"></i>Clear Filters
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="card">
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Transaction ID</th>
+                                <th>Customer</th>
+                                <th>Payment Method</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var transaction in Model)
+                            {
+                                <tr>
+                                    <td><strong>#@transaction.OrderId</strong></td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(transaction.TransactionId))
+                                        {
+                                            <code class="text-primary">@transaction.TransactionId</code>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <i class="fas fa-user me-1 text-muted"></i>
+                                        @transaction.Customer?.FullName
+                                    </td>
+                                    <td>
+                                        @if (transaction.PaymentMethod == "Cash on Delivery")
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-money-bill-wave me-1"></i>COD
+                                            </span>
+                                        }
+                                        else if (transaction.PaymentMethod == "Credit/Debit Card")
+                                        {
+                                            <span class="badge bg-primary">
+                                                <i class="fas fa-credit-card me-1"></i>Card
+                                            </span>
+                                        }
+                                        else if (transaction.PaymentMethod == "UPI")
+                                        {
+                                            <span class="badge bg-info">
+                                                <i class="fas fa-mobile-alt me-1"></i>UPI
+                                            </span>
+                                        }
+                                        else if (transaction.PaymentMethod == "Net Banking")
+                                        {
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-university me-1"></i>Net Banking
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td><strong class="text-success">₹@((transaction.FinalAmount ?? transaction.TotalAmount).ToString("N2"))</strong></td>
+                                    <td>
+                                        @if (transaction.PaymentStatus == "Paid")
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check-circle me-1"></i>Paid
+                                            </span>
+                                        }
+                                        else if (transaction.PaymentStatus == "Pending")
+                                        {
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-clock me-1"></i>Pending
+                                            </span>
+                                        }
+                                        else if (transaction.PaymentStatus == "Failed")
+                                        {
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-times-circle me-1"></i>Failed
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Unknown</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <small>@transaction.OrderDate.ToString("dd MMM yyyy")</small>
+                                        <br>
+                                        <small class="text-muted">@transaction.OrderDate.ToString("hh:mm tt")</small>
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Details", new { id = transaction.OrderId })"
+                                           class="btn btn-sm btn-primary" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <h4>No Transactions Found</h4>
+                    <p class="text-muted">No payment transactions match your filters.</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .stats-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 15px;
+    }
+
+        .stats-card .card-body {
+            padding: 1.5rem;
+        }
+
+        .stats-card h6 {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-card h3 {
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+
+    .stats-icon {
+        opacity: 0.5;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f8f9fa;
+        cursor: pointer;
+    }
+
+    code {
+        font-size: 0.85rem;
+        padding: 2px 6px;
+        border-radius: 3px;
+        background-color: #f0f0f0;
+    }
+
+    .badge {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.8rem;
+    }
+</style>

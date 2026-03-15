@@ -1,0 +1,643 @@
+@model IEnumerable<RestaurantFoodOrderingAdmin.Models.Order>
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+@section Styles {
+    <style>
+        /* Ensure CSS is loaded */
+        .dashboard-card {
+            display: block !important;
+        }
+    </style>
+}
+
+<!-- Statistics Cards - 3x3 Grid -->
+<div class="row g-4 mb-4">
+    <!-- Total Customers Card -->
+    <div class="col-xxl-4 col-xl-6 col-lg-6 col-md-6">
+        <div class="dashboard-card card-customers">
+            <div class="card-content">
+                <div class="card-info">
+                    <h6 class="card-label">Total Customers</h6>
+                    <h2 class="card-value">@ViewBag.TotalCustomers</h2>
+                    <p class="card-subtext">Registered Users</p>
+                </div>
+                <div class="card-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Orders Card -->
+    <div class="col-xxl-4 col-xl-6 col-lg-6 col-md-6">
+        <div class="dashboard-card card-orders">
+            <div class="card-content">
+                <div class="card-info">
+                    <h6 class="card-label">Total Orders</h6>
+                    <h2 class="card-value">@ViewBag.TotalOrders</h2>
+                    <p class="card-subtext">All Time Orders</p>
+                </div>
+                <div class="card-icon">
+                    <i class="fas fa-receipt"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Revenue Card -->
+    <div class="col-xxl-4 col-xl-6 col-lg-6 col-md-6">
+        <div class="dashboard-card card-revenue">
+            <div class="card-content">
+                <div class="card-info">
+                    <h6 class="card-label">Total Revenue</h6>
+                    <h2 class="card-value">₹@ViewBag.TotalRevenue.ToString("N0")</h2>
+                    <p class="card-subtext">Total Earnings</p>
+                </div>
+                <div class="card-icon">
+                    <i class="fas fa-rupee-sign"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Menu Items Card -->
+    <div class="col-xxl-4 col-xl-6 col-lg-6 col-md-6">
+        <div class="dashboard-card card-food">
+            <div class="card-content">
+                <div class="card-info">
+                    <h6 class="card-label">Total Menu Items</h6>
+                    <h2 class="card-value">@ViewBag.TotalFoodItems</h2>
+                    <p class="card-subtext">Food Items</p>
+                </div>
+                <div class="card-icon">
+                    <i class="fas fa-utensils"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Categories Card -->
+    <div class="col-xxl-4 col-xl-6 col-lg-6 col-md-6">
+        <div class="dashboard-card card-categories">
+            <div class="card-content">
+                <div class="card-info">
+                    <h6 class="card-label">Total Categories</h6>
+                    <h2 class="card-value">@ViewBag.TotalCategories</h2>
+                    <p class="card-subtext">Food Categories</p>
+                </div>
+                <div class="card-icon">
+                    <i class="fas fa-th-large"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Combos Card -->
+    <div class="col-xxl-4 col-xl-6 col-lg-6 col-md-6">
+        <div class="dashboard-card card-combos">
+            <div class="card-content">
+                <div class="card-info">
+                    <h6 class="card-label">Total Combos</h6>
+                    <h2 class="card-value">@ViewBag.TotalCombos</h2>
+                    <p class="card-subtext">Combo Offers</p>
+                </div>
+                <div class="card-icon">
+                    <i class="fas fa-box-open"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Reviews & Ratings Card -->
+    <div class="col-xxl-4 col-xl-6 col-lg-6 col-md-6">
+        <div class="dashboard-card card-reviews">
+            <div class="card-content">
+                <div class="card-info">
+                    <h6 class="card-label">Reviews & Ratings</h6>
+                    <h2 class="card-value">@ViewBag.TotalReviews</h2>
+                    <p class="card-subtext">Avg: @ViewBag.AverageRating.ToString("F1") <i class="fas fa-star text-warning"></i></p>
+                </div>
+                <div class="card-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Coupons Card -->
+    <div class="col-xxl-4 col-xl-6 col-lg-6 col-md-6">
+        <div class="dashboard-card card-coupons">
+            <div class="card-content">
+                <div class="card-info">
+                    <h6 class="card-label">Coupons & Discounts</h6>
+                    <h2 class="card-value">@ViewBag.TotalCoupons</h2>
+                    <p class="card-subtext">Active Coupons</p>
+                </div>
+                <div class="card-icon">
+                    <i class="fas fa-ticket-alt"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Payment Transactions Card -->
+    <div class="col-xxl-4 col-xl-6 col-lg-6 col-md-6">
+        <div class="dashboard-card card-payments">
+            <div class="card-content">
+                <div class="card-info">
+                    <h6 class="card-label">Payment Transactions</h6>
+                    <h2 class="card-value">@ViewBag.TotalPaymentTransactions</h2>
+                    <p class="card-subtext">Completed</p>
+                </div>
+                <div class="card-icon">
+                    <i class="fas fa-credit-card"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sales Chart -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card chart-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>Sales Overview
+                </h5>
+                <div class="chart-filters">
+                    <button class="filter-btn active" data-filter="7days" onclick="loadDashboardSalesChart('7days')">Last 7 Days</button>
+                    <button class="filter-btn" data-filter="30days" onclick="loadDashboardSalesChart('30days')">Last 30 Days</button>
+                    <button class="filter-btn" data-filter="year" onclick="loadDashboardSalesChart('year')">This Year</button>
+                    <button class="filter-btn" data-filter="all" onclick="loadDashboardSalesChart('all')">All Time</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="salesChart" height="80"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Today's Orders & Order Status Pie Chart -->
+<div class="row g-4 mb-4">
+    <!-- Today's Orders Table -->
+    <div class="col-xxl-8 col-xl-7 col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-calendar-day me-2"></i>Today's Orders
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in Model)
+                                {
+                                    <tr>
+                                        <td><strong>#@order.OrderId</strong></td>
+                                        <td>@order.Customer?.FullName</td>
+                                        <td><strong>₹@order.TotalAmount</strong></td>
+                                        <td>
+                                            @if (order.Status == "Pending")
+                                            {
+                                                <span class="badge status-pending">@order.Status</span>
+                                            }
+                                            else if (order.Status == "Confirmed")
+                                            {
+                                                <span class="badge status-confirmed">@order.Status</span>
+                                            }
+                                            else if (order.Status == "Preparing")
+                                            {
+                                                <span class="badge status-preparing">@order.Status</span>
+                                            }
+                                            else if (order.Status == "Out for Delivery")
+                                            {
+                                                <span class="badge status-delivery">@order.Status</span>
+                                            }
+                                            else if (order.Status == "Delivered")
+                                            {
+                                                <span class="badge status-delivered">@order.Status</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge status-cancelled">@order.Status</span>
+                                            }
+                                        </td>
+                                        <td>@order.OrderDate.ToString("hh:mm tt")</td>
+                                        <td>
+                                            <a href="@Url.Action("Details", "Order", new { id = order.OrderId })"
+                                               class="btn btn-sm btn-primary">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                        <h5>No Orders Today</h5>
+                        <p class="text-muted">Orders placed today will appear here.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Status Pie Chart -->
+    <div class="col-xxl-4 col-xl-5 col-lg-12">
+        <div class="card chart-card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>Order Status
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="orderStatusChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Orders Status Table (Pending, Confirmed, Preparing, Out for Delivery, Cancelled) -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-list-check me-2"></i>Orders Status Table
+                </h5>
+                <a href="@Url.Action("Index", "Order")" class="btn btn-sm btn-primary">
+                    <i class="fas fa-eye me-1"></i>View All
+                </a>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.OrdersByStatus != null && ((IEnumerable<RestaurantFoodOrderingAdmin.Models.Order>)ViewBag.OrdersByStatus).Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in (IEnumerable<RestaurantFoodOrderingAdmin.Models.Order>)ViewBag.OrdersByStatus)
+                                {
+                                    <tr>
+                                        <td><strong>#@order.OrderId</strong></td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-user-circle me-2 text-muted"></i>
+                                                @order.Customer?.FullName
+                                            </div>
+                                        </td>
+                                        <td><strong>₹@order.TotalAmount</strong></td>
+                                        <td>
+                                            @if (order.Status == "Pending")
+                                            {
+                                                <span class="badge status-pending">
+                                                    <i class="fas fa-clock me-1"></i>Pending
+                                                </span>
+                                            }
+                                            else if (order.Status == "Confirmed")
+                                            {
+                                                <span class="badge status-confirmed">
+                                                    <i class="fas fa-check-circle me-1"></i>Confirmed
+                                                </span>
+                                            }
+                                            else if (order.Status == "Preparing")
+                                            {
+                                                <span class="badge status-preparing">
+                                                    <i class="fas fa-utensils me-1"></i>Preparing
+                                                </span>
+                                            }
+                                            else if (order.Status == "Out for Delivery")
+                                            {
+                                                <span class="badge status-delivery">
+                                                    <i class="fas fa-shipping-fast me-1"></i>Out for Delivery
+                                                </span>
+                                            }
+                                            else if (order.Status == "Cancelled")
+                                            {
+                                                <span class="badge status-cancelled">
+                                                    <i class="fas fa-times-circle me-1"></i>Cancelled
+                                                </span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="text-muted small">
+                                                @order.OrderDate.ToString("dd MMM yyyy")
+                                                <br>
+                                                @order.OrderDate.ToString("hh:mm tt")
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="@Url.Action("Details", "Order", new { id = order.OrderId })"
+                                               class="btn btn-sm btn-primary" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                        <h5>No Orders Found</h5>
+                        <p class="text-muted">Orders with these statuses will appear here.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Status Table (Pending & Failed) -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Payment Status (Pending & Failed)
+                </h5>
+                @if (ViewBag.PendingFailedPayments != null && ((IEnumerable<RestaurantFoodOrderingAdmin.Models.Order>)ViewBag.PendingFailedPayments).Any())
+                {
+                    <a href="@Url.Action("Index", "Order")" class="btn btn-sm btn-primary">
+                        <i class="fas fa-list me-1"></i>Manage Orders
+                    </a>
+                }
+            </div>
+            <div class="card-body">
+                @if (ViewBag.PendingFailedPayments != null && ((IEnumerable<RestaurantFoodOrderingAdmin.Models.Order>)ViewBag.PendingFailedPayments).Any())
+                {
+                    <div class="table-responsive payment-status-scroll">
+                        <table class="table table-hover orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Transaction ID</th>
+                                    <th>Customer</th>
+                                    <th>Payment Method</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var order in (IEnumerable<RestaurantFoodOrderingAdmin.Models.Order>)ViewBag.PendingFailedPayments)
+                                {
+                                    <tr>
+                                        <td><strong>#@order.OrderId</strong></td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(order.TransactionId))
+                                            {
+                                                <span class="text-muted">@order.TransactionId</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">-</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-user-circle me-2 text-muted"></i>
+                                                @order.Customer?.FullName
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(order.PaymentMethod))
+                                            {
+                                                if (order.PaymentMethod == "Cash on Delivery" || order.PaymentMethod == "COD")
+                                                {
+                                                    <span class="badge bg-secondary">
+                                                        <i class="fas fa-money-bill-wave me-1"></i>COD
+                                                    </span>
+                                                }
+                                                else if (order.PaymentMethod == "Credit Card" || order.PaymentMethod == "Debit Card")
+                                                {
+                                                    <span class="badge bg-info">
+                                                        <i class="fas fa-credit-card me-1"></i>@order.PaymentMethod
+                                                    </span>
+                                                }
+                                                else if (order.PaymentMethod == "UPI")
+                                                {
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-mobile-alt me-1"></i>UPI
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-primary">@order.PaymentMethod</span>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">-</span>
+                                            }
+                                        </td>
+                                        <td><strong>₹@order.TotalAmount</strong></td>
+                                        <td>
+                                            @if (order.PaymentStatus == "Pending")
+                                            {
+                                                <span class="badge bg-warning text-dark">
+                                                    <i class="fas fa-clock me-1"></i>Pending
+                                                </span>
+                                            }
+                                            else if (order.PaymentStatus == "Failed")
+                                            {
+                                                <span class="badge bg-danger">
+                                                    <i class="fas fa-times-circle me-1"></i>Failed
+                                                </span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="text-muted small">
+                                                @order.OrderDate.ToString("dd MMM yyyy")
+                                                <br>
+                                                @order.OrderDate.ToString("hh:mm tt")
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="@Url.Action("Details", "Order", new { id = order.OrderId })"
+                                               class="btn btn-sm btn-primary" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                        <h5>All Payments Successful!</h5>
+                        <p class="text-muted">No pending or failed payments at the moment.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Selling Items -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-fire me-2"></i>Top Selling Items
+                </h5>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.TopSellingItems != null && ((IEnumerable<dynamic>)ViewBag.TopSellingItems).Any())
+                {
+                    <div class="top-items-list">
+                        @{
+                            int rank = 1;
+                        }
+                        @foreach (var item in (IEnumerable<dynamic>)ViewBag.TopSellingItems)
+                        {
+                            <div class="top-item">
+                                <div class="item-rank">@rank</div>
+                                <div class="item-details">
+                                    <h6 class="item-name">@item.FoodName</h6>
+                                    <p class="item-stats">
+                                        <span class="badge bg-primary">@item.TotalOrders Orders</span>
+                                        <span class="badge bg-success">₹@item.TotalRevenue</span>
+                                    </p>
+                                </div>
+                            </div>
+                            rank++;
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-chart-bar fa-4x text-muted mb-3"></i>
+                        <h5>No Sales Data</h5>
+                        <p class="text-muted">Sales data will appear here.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="quick-actions">
+                    <a href="@Url.Action("Create", "FoodItem")" class="action-btn">
+                        <i class="fas fa-plus-circle"></i>
+                        <span>Add Food Item</span>
+                    </a>
+                    <a href="@Url.Action("Create", "Combo")" class="action-btn">
+                        <i class="fas fa-box-open"></i>
+                        <span>Add Combo</span>
+                    </a>
+                    <a href="@Url.Action("Create", "Category")" class="action-btn">
+                        <i class="fas fa-th-large"></i>
+                        <span>Add Category</span>
+                    </a>
+                    <a href="@Url.Action("Create", "Coupon")" class="action-btn">
+                        <i class="fas fa-ticket-alt"></i>
+                        <span>Add Coupon</span>
+                    </a>
+                    <a href="@Url.Action("Index", "Customer")" class="action-btn">
+                        <i class="fas fa-users"></i>
+                        <span>View Customers</span>
+                    </a>
+                    <a href="@Url.Action("Index", "Report")" class="action-btn">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Generate Report</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="~/js/chart.js"></script>
+    <script>
+        // Pass data from ViewBag to JavaScript
+        var salesChartDates = @Html.Raw(ViewBag.SalesChartDates);
+        var salesChartAmounts = @Html.Raw(ViewBag.SalesChartAmounts);
+        const orderStatusData = {
+            pending: @ViewBag.PendingOrders,
+            confirmed: @ViewBag.ConfirmedOrders,
+            preparing: @ViewBag.PreparingOrders,
+            delivery: @ViewBag.OutForDeliveryOrders,
+            delivered: @ViewBag.DeliveredOrders,
+            cancelled: @ViewBag.CancelledOrders
+        };
+
+        // Initialize dashboard charts
+        document.addEventListener('DOMContentLoaded', function() {
+            createSalesChart();
+            createOrderStatusChart();
+        });
+
+        // Specialized function for dashboard sales chart with AJAX
+        function loadDashboardSalesChart(period) {
+            // Update active button
+            document.querySelectorAll('.chart-filters .filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.filter-btn[data-filter="${period}"]`).classList.add('active');
+
+            fetch(`/Report/GetSalesChartData?period=${period}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.labels && data.values) {
+                        // Update the global variables expected by createSalesChart
+                        window.salesChartDates = data.labels;
+                        window.salesChartAmounts = data.values;
+                        createSalesChart();
+                    }
+                })
+                .catch(error => console.error('Error loading dashboard chart:', error));
+        }
+    </script>
+}

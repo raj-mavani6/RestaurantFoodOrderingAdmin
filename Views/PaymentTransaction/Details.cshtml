@@ -1,0 +1,334 @@
+@model RestaurantFoodOrderingAdmin.Models.Order
+@{
+    ViewData["Title"] = "Transaction Details";
+}
+
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-file-invoice-dollar me-2"></i>Transaction Details - Order #@Model.OrderId</h2>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Transactions
+        </a>
+    </div>
+
+    <div class="row">
+        <!-- Payment Information -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-credit-card me-2"></i>Payment Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>Order ID:</strong>
+                        </div>
+                        <div class="col-6">
+                            <span class="badge bg-primary">#@Model.OrderId</span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>Transaction ID:</strong>
+                        </div>
+                        <div class="col-6">
+                            @if (!string.IsNullOrEmpty(Model.TransactionId))
+                            {
+                                <code class="bg-light text-primary">@Model.TransactionId</code>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Not Available</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>Payment Method:</strong>
+                        </div>
+                        <div class="col-6">
+                            @if (Model.PaymentMethod == "Cash on Delivery")
+                            {
+                                <span class="badge bg-success">
+                                    <i class="fas fa-money-bill-wave me-1"></i>Cash on Delivery
+                                </span>
+                            }
+                            else if (Model.PaymentMethod == "Credit/Debit Card")
+                            {
+                                <span class="badge bg-primary">
+                                    <i class="fas fa-credit-card me-1"></i>Credit/Debit Card
+                                </span>
+                            }
+                            else if (Model.PaymentMethod == "UPI")
+                            {
+                                <span class="badge bg-info">
+                                    <i class="fas fa-mobile-alt me-1"></i>UPI
+                                </span>
+                            }
+                            else if (Model.PaymentMethod == "Net Banking")
+                            {
+                                <span class="badge bg-warning">
+                                    <i class="fas fa-university me-1"></i>Net Banking
+                                </span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>Payment Status:</strong>
+                        </div>
+                        <div class="col-6">
+                            @if (Model.PaymentStatus == "Paid")
+                            {
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check-circle me-1"></i>Paid
+                                </span>
+                            }
+                            else if (Model.PaymentStatus == "Pending")
+                            {
+                                <span class="badge bg-warning">
+                                    <i class="fas fa-clock me-1"></i>Pending
+                                </span>
+                            }
+                            else if (Model.PaymentStatus == "Failed")
+                            {
+                                <span class="badge bg-danger">
+                                    <i class="fas fa-times-circle me-1"></i>Failed
+                                </span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <strong>Order Date:</strong>
+                        </div>
+                        <div class="col-6">
+                            @Model.OrderDate.ToString("dd MMM yyyy, hh:mm tt")
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Update Payment Status Form -->
+                    <form method="post" asp-action="UpdateStatus">
+                        <input type="hidden" name="orderId" value="@Model.OrderId" />
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Update Payment Status:</strong></label>
+                            <select class="form-select" name="paymentStatus" required>
+                                <option value="Paid" selected="@(Model.PaymentStatus == "Paid")">Paid</option>
+                                <option value="Pending" selected="@(Model.PaymentStatus == "Pending")">Pending</option>
+                                <option value="Failed" selected="@(Model.PaymentStatus == "Failed")">Failed</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-save me-2"></i>Update Status
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customer & Delivery Information -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user me-2"></i>Customer & Delivery Information
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong>Customer Name:</strong>
+                        <p class="mb-0">@Model.Customer?.FullName</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong>Email:</strong>
+                        <p class="mb-0">@Model.Customer?.Email</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong>Contact Phone:</strong>
+                        <p class="mb-0">
+                            @if (!string.IsNullOrEmpty(Model.ContactPhone))
+                            {
+                                <span>@Model.ContactPhone</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Not Provided</span>
+                            }
+                        </p>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong>Delivery Address:</strong>
+                        <p class="mb-0">@Model.DeliveryAddress</p>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.SpecialInstructions))
+                    {
+                        <div class="mb-3">
+                            <strong>Special Instructions:</strong>
+                            <p class="mb-0 text-muted">@Model.SpecialInstructions</p>
+                        </div>
+                    }
+
+                    <div class="mb-0">
+                        <strong>Order Status:</strong>
+                        <p class="mb-0">
+                            @if (Model.Status == "Pending")
+                            {
+                                <span class="badge bg-warning">Pending</span>
+                            }
+                            else if (Model.Status == "Confirmed")
+                            {
+                                <span class="badge bg-info">Confirmed</span>
+                            }
+                            else if (Model.Status == "Preparing")
+                            {
+                                <span class="badge bg-primary">Preparing</span>
+                            }
+                            else if (Model.Status == "Delivered")
+                            {
+                                <span class="badge bg-success">Delivered</span>
+                            }
+                            else if (Model.Status == "Cancelled")
+                            {
+                                <span class="badge bg-danger">Cancelled</span>
+                            }
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Items -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-shopping-bag me-2"></i>Order Items
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.OrderItems != null)
+                        {
+                            @foreach (var item in Model.OrderItems)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@item.FoodItem?.FoodName</strong>
+                                    </td>
+                                    <td>@item.Quantity</td>
+                                    <td>₹@item.Price.ToString("N2")</td>
+                                    <td><strong>₹@item.TotalPrice.ToString("N2")</strong></td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Summary -->
+    <div class="row">
+        <div class="col-md-6 offset-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-calculator me-2"></i>Payment Summary
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <strong>₹@Model.TotalAmount.ToString("N2")</strong>
+                    </div>
+
+                    @if (Model.DiscountAmount.HasValue && Model.DiscountAmount > 0)
+                    {
+                        <div class="d-flex justify-content-between mb-2 text-success">
+                            <span>Discount:</span>
+                            <strong>- ₹@Model.DiscountAmount.Value.ToString("N2")</strong>
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(Model.CouponCode))
+                    {
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Coupon Applied:</span>
+                            <code class="bg-light">@Model.CouponCode</code>
+                        </div>
+                    }
+
+                    <hr>
+
+                    <div class="d-flex justify-content-between">
+                        <h5>Final Amount:</h5>
+                        <h5 class="text-success"><strong>₹@((Model.FinalAmount ?? Model.TotalAmount).ToString("N2"))</strong></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border-radius: 10px;
+    }
+
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+    }
+
+    code {
+        font-size: 0.9rem;
+        padding: 4px 8px;
+        border-radius: 4px;
+    }
+
+    .badge {
+        padding: 0.5rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    .table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+    }
+</style>
+
+@if (TempData["Success"] != null)
+{
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: '@TempData["Success"]',
+            timer: 3000,
+            showConfirmButton: false
+        });
+    </script>
+}

@@ -1,0 +1,225 @@
+@model IEnumerable<RestaurantFoodOrderingAdmin.Models.CustomerCoupon>
+@{
+    ViewData["Title"] = "Coupon Assignments";
+    var coupon = ViewBag.Coupon as RestaurantFoodOrderingAdmin.Models.Coupon;
+}
+
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-users me-2"></i>Coupon Assignments: @coupon?.CouponCode
+        </h2>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Coupons
+        </a>
+    </div>
+
+    <!-- Coupon Info Card -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-ticket-alt me-2"></i>Coupon Details
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>Code:</strong><br>
+                    <span class="text-primary">@coupon?.CouponCode</span>
+                </div>
+                <div class="col-md-4">
+                    <strong>Description:</strong><br>
+                    @coupon?.Description
+                </div>
+                <div class="col-md-2">
+                    <strong>Discount:</strong><br>
+                    @if (coupon?.DiscountType == "Percentage")
+                    {
+                        <text>@coupon.DiscountValue%</text>
+                    }
+                    else
+                    {
+                        <text>₹@coupon?.DiscountValue</text>
+                    }
+                </div>
+                <div class="col-md-2">
+                    <strong>Min Order:</strong><br>
+                    ₹@coupon?.MinimumOrderAmount
+                </div>
+                <div class="col-md-1">
+                    <strong>Status:</strong><br>
+                    @if (coupon?.IsActive == true)
+                    {
+                        <span class="badge bg-success">Active</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Inactive</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5><i class="fas fa-users me-2"></i>Total Assigned</h5>
+                    <h2>@Model.Count()</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5><i class="fas fa-check-circle me-2"></i>Used</h5>
+                    <h2>@Model.Count(c => c.IsUsed)</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5><i class="fas fa-clock me-2"></i>Available</h5>
+                    <h2>@Model.Count(c => !c.IsUsed)</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assignments Table -->
+    <div class="card">
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Email</th>
+                                <th>Assigned Date</th>
+                                <th>Remaining Usage</th>
+                                <th>Status</th>
+                                <th>Used Date</th>
+                                <th>Order</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var assignment in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <i class="fas fa-user me-2"></i>
+                                        <strong>@assignment.Customer?.FullName</strong>
+                                    </td>
+                                    <td>@assignment.Customer?.Email</td>
+                                    <td>@assignment.AssignedDate.ToString("dd MMM yyyy, hh:mm tt")</td>
+                                    <td>
+                                        <span class="badge bg-secondary">@assignment.RemainingUsage</span>
+                                    </td>
+                                    <td>
+                                        @if (assignment.IsUsed)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check me-1"></i>Used
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-clock me-1"></i>Available
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (assignment.UsedDate.HasValue)
+                                        {
+                                            @assignment.UsedDate.Value.ToString("dd MMM yyyy")
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (assignment.OrderId.HasValue)
+                                        {
+                                            <a href="@Url.Action("Details", "Order", new { id = assignment.OrderId })"
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-shopping-cart me-1"></i>#@assignment.OrderId
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!assignment.IsUsed)
+                                        {
+                                            <button class="btn btn-sm btn-danger revoke-btn"
+                                                    data-id="@assignment.CustomerCouponId">
+                                                <i class="fas fa-times me-1"></i>Revoke
+                                            </button>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-sm btn-secondary" disabled>
+                                                <i class="fas fa-ban me-1"></i>Used
+                                            </button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-users-slash fa-3x text-muted mb-3"></i>
+                    <h5>No Assignments Found</h5>
+                    <p class="text-muted">This coupon has not been assigned to any customer yet</p>
+                    <a href="@Url.Action("Assign")" class="btn btn-primary">
+                        <i class="fas fa-user-tag me-1"></i>Assign Coupon
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    // Revoke assignment
+    document.querySelectorAll('.revoke-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const assignmentId = this.dataset.id;
+
+            if (confirm('Are you sure you want to revoke this coupon assignment?')) {
+                fetch('/Coupon/RevokeAssignment/' + assignmentId, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    alert('Error revoking assignment');
+                });
+            }
+        });
+    });
+</script>

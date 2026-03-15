@@ -1,0 +1,252 @@
+@model IEnumerable<RestaurantFoodOrderingAdmin.Models.Combo>
+@{
+    ViewData["Title"] = "Manage Combos";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <h2>
+            <i class="fas fa-box-open me-2"></i>Manage Combos
+        </h2>
+        <div class="d-flex gap-3 align-items-center flex-wrap">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search combos..." 
+                   style="width: 200px;" onkeyup="filterCombos()">
+            <select id="typeFilter" class="form-select" style="width: 150px;" onchange="filterCombos()">
+                <option value="">All Type</option>
+                <option value="Veg">Vegetarian</option>
+                <option value="Non-Veg">Non-Vegetarian</option>
+            </select>
+            <select id="statusFilter" class="form-select" style="width: 160px;" onchange="filterCombos()">
+                <option value="">All Status</option>
+                <option value="Available">Available</option>
+                <option value="Unavailable">Unavailable</option>
+            </select>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Add New Combo
+            </a>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Combos Table -->
+    <div class="card">
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover" id="combosTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Image</th>
+                                <th>Combo Name</th>
+                                <th>Original Price</th>
+                                <th>Combo Price</th>
+                                <th>Discount</th>
+                                <th>Items</th>
+                                <th>Type</th>
+                                <th>Valid Until</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var combo in Model)
+                            {
+                                <tr>
+                                    <td>@combo.ComboId</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(combo.ImageUrl))
+                                        {
+                                            <img src="@combo.ImageUrl" alt="@combo.ComboName" style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;">
+                                        }
+                                        else
+                                        {
+                                            <div style="width: 60px; height: 60px; background: #ddd; border-radius: 5px; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fas fa-image text-muted"></i>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        <strong>@combo.ComboName</strong>
+                                        <br>
+                                        <small class="text-muted">@(combo.Description?.Length > 50 ? combo.Description.Substring(0, 50) + "..." : combo.Description)</small>
+                                    </td>
+                                    <td>
+                                        <span class="text-decoration-line-through text-muted">₹@combo.OriginalPrice</span>
+                                    </td>
+                                    <td>
+                                        <strong class="text-success">₹@combo.ComboPrice</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-danger">@combo.Discount.ToString("F0")% OFF</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">@(combo.ComboItems?.Count ?? 0) Items</span>
+                                    </td>
+                                    <td>
+                                        @if (combo.IsVeg)
+                                        {
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-leaf me-1"></i>Veg
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-drumstick-bite me-1"></i>Non-Veg
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (combo.ValidUntil.HasValue)
+                                        {
+                                            <small>@combo.ValidUntil.Value.ToString("dd MMM yyyy")</small>
+                                        }
+                                        else
+                                        {
+                                            <small class="text-muted">No expiry</small>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (combo.IsAvailable)
+                                        {
+                                            <span class="badge bg-success" id="status-@combo.ComboId">
+                                                <i class="fas fa-check-circle me-1"></i>Available
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary" id="status-@combo.ComboId">
+                                                <i class="fas fa-times-circle me-1"></i>Unavailable
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a asp-action="Details" asp-route-id="@combo.ComboId" class="btn btn-sm btn-info" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@combo.ComboId" class="btn btn-sm btn-warning" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-secondary" onclick="toggleAvailability(@combo.ComboId)" title="Toggle Availability">
+                                                <i class="fas fa-toggle-on"></i>
+                                            </button>
+                                            <a asp-action="Delete" asp-route-id="@combo.ComboId" class="btn btn-sm btn-danger" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5">
+                    <i class="fas fa-box-open fa-5x text-muted mb-3"></i>
+                    <h4>No Combos Found</h4>
+                    <p class="text-muted">Start by creating your first combo offer.</p>
+                    <a asp-action="Create" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Add New Combo
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function filterCombos() {
+            var searchInput = document.getElementById('searchInput').value.toLowerCase();
+            var typeFilter = document.getElementById('typeFilter').value.toLowerCase();
+            var statusFilter = document.getElementById('statusFilter').value.toLowerCase();
+            var table = document.getElementById('combosTable');
+            var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            
+            for (var i = 0; i < rows.length; i++) {
+                var comboName = rows[i].getElementsByTagName('td')[2]; // Combo Name column (index 2)
+                var typeCell = rows[i].getElementsByTagName('td')[7]; // Type column (index 7)
+                var statusCell = rows[i].getElementsByTagName('td')[9]; // Status column (index 9)
+                
+                var showRow = true;
+                
+                // Search filter
+                if (comboName && searchInput !== '') {
+                    var nameText = comboName.textContent || comboName.innerText;
+                    if (!nameText.toLowerCase().includes(searchInput)) {
+                        showRow = false;
+                    }
+                }
+                
+                // Type filter
+                if (typeCell && typeFilter !== '' && showRow) {
+                    var typeText = typeCell.textContent || typeCell.innerText;
+                    if (!typeText.toLowerCase().includes(typeFilter)) {
+                        showRow = false;
+                    }
+                }
+                
+                // Status filter
+                if (statusCell && statusFilter !== '' && showRow) {
+                    var statusText = statusCell.textContent || statusCell.innerText;
+                    if (!statusText.toLowerCase().includes(statusFilter)) {
+                        showRow = false;
+                    }
+                }
+                
+                rows[i].style.display = showRow ? '' : 'none';
+            }
+        }
+
+        function toggleAvailability(comboId) {
+            if (confirm('Are you sure you want to toggle availability?')) {
+                fetch('/Combo/ToggleAvailability/' + comboId, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const badge = document.getElementById('status-' + comboId);
+                        if (data.isAvailable) {
+                            badge.className = 'badge bg-success';
+                            badge.innerHTML = '<i class="fas fa-check-circle me-1"></i>Available';
+                        } else {
+                            badge.className = 'badge bg-secondary';
+                            badge.innerHTML = '<i class="fas fa-times-circle me-1"></i>Unavailable';
+                        }
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to toggle availability');
+                });
+            }
+        }
+    </script>
+}

@@ -1,0 +1,173 @@
+@model RestaurantFoodOrderingAdmin.Models.Combo
+@{
+    ViewData["Title"] = "Delete Combo";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>Delete Combo
+        </h2>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to List
+        </a>
+    </div>
+
+    <!-- Warning Alert -->
+    <div class="alert alert-danger">
+        <h5 class="alert-heading">
+            <i class="fas fa-exclamation-circle me-2"></i>Warning!
+        </h5>
+        <p class="mb-0">Are you sure you want to delete this combo? This action cannot be undone.</p>
+    </div>
+
+    <!-- Combo Details Card -->
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">Combo to be Deleted</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <!-- Image Section -->
+                <div class="col-md-4">
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" alt="@Model.ComboName" class="img-fluid rounded" style="max-height: 300px; object-fit: cover;">
+                    }
+                    else
+                    {
+                        <div style="height: 200px; background: #f5f5f5; display: flex; align-items: center; justify-content: center; border-radius: 10px;">
+                            <i class="fas fa-image fa-3x text-muted"></i>
+                        </div>
+                    }
+                </div>
+
+                <!-- Details Section -->
+                <div class="col-md-8">
+                    <dl class="row">
+                        <dt class="col-sm-4">Combo ID:</dt>
+                        <dd class="col-sm-8">#@Model.ComboId</dd>
+
+                        <dt class="col-sm-4">Combo Name:</dt>
+                        <dd class="col-sm-8"><strong>@Model.ComboName</strong></dd>
+
+                        <dt class="col-sm-4">Description:</dt>
+                        <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Description) ? "N/A" : Model.Description)</dd>
+
+                        <dt class="col-sm-4">Original Price:</dt>
+                        <dd class="col-sm-8">
+                            <span class="text-decoration-line-through text-muted">₹@Model.OriginalPrice</span>
+                        </dd>
+
+                        <dt class="col-sm-4">Combo Price:</dt>
+                        <dd class="col-sm-8">
+                            <strong class="text-success">₹@Model.ComboPrice</strong>
+                        </dd>
+
+                        <dt class="col-sm-4">Discount:</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge bg-danger">@Model.Discount.ToString("F0")% OFF</span>
+                        </dd>
+
+                        <dt class="col-sm-4">Type:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.IsVeg)
+                            {
+                                <span class="badge bg-success">
+                                    <i class="fas fa-leaf me-1"></i>Vegetarian
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning">
+                                    <i class="fas fa-drumstick-bite me-1"></i>Non-Vegetarian
+                                </span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">Status:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.IsAvailable)
+                            {
+                                <span class="badge bg-success">Available</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Unavailable</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">Items Included:</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge bg-info">@(Model.ComboItems?.Count ?? 0) Items</span>
+                        </dd>
+
+                        <dt class="col-sm-4">Created Date:</dt>
+                        <dd class="col-sm-8">@Model.CreatedDate.ToString("dd MMM yyyy hh:mm tt")</dd>
+
+                        <dt class="col-sm-4">Valid Until:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.ValidUntil.HasValue)
+                            {
+                                @Model.ValidUntil.Value.ToString("dd MMM yyyy")
+                            }
+                            else
+                            {
+                                <span class="text-muted">No expiry date</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+
+            @if (Model.ComboItems != null && Model.ComboItems.Any())
+            {
+                <hr>
+                <h5 class="mb-3">
+                    <i class="fas fa-utensils me-2"></i>Included Items
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-sm table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Food Item</th>
+                                <th>Category</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.ComboItems)
+                            {
+                                <tr>
+                                    <td>@item.FoodItem?.FoodName</td>
+                                    <td>@item.FoodItem?.Category?.CategoryName</td>
+                                    <td>
+                                        <span class="badge bg-primary">×@item.Quantity</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Confirmation Form -->
+    <div class="card mt-4 border-danger">
+        <div class="card-body">
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="ComboId" />
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i>Yes, Delete This Combo
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-times me-2"></i>No, Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

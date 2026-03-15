@@ -1,0 +1,301 @@
+@{
+    ViewData["Title"] = "Assign Coupons";
+    var customers = ViewBag.Customers as List<RestaurantFoodOrderingAdmin.Models.Customer>;
+    var coupons = ViewBag.Coupons as List<RestaurantFoodOrderingAdmin.Models.Coupon>;
+}
+
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>
+            <i class="fas fa-user-tag me-2"></i>Assign Coupons to Customers
+        </h2>
+        <a href="@Url.Action("Index")" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i>Back to Coupons
+        </a>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Assign to Single Customer -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user me-2"></i>Assign to Single Customer
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="AssignToCustomer" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-user me-1"></i>Select Customer *
+                            </label>
+                            <select name="customerId" class="form-select" required>
+                                <option value="">-- Choose Customer --</option>
+                                @if (customers != null)
+                                {
+                                    foreach (var customer in customers)
+                                    {
+                                        <option value="@customer.CustomerId">
+                                            @customer.FullName (@customer.Email)
+                                        </option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-ticket-alt me-1"></i>Select Coupon *
+                            </label>
+                            <select name="couponId" class="form-select" required id="singleCouponSelect">
+                                <option value="">-- Choose Coupon --</option>
+                                @if (coupons != null)
+                                {
+                                    foreach (var coupon in coupons)
+                                    {
+                                        <option value="@coupon.CouponId"
+                                                data-type="@coupon.DiscountType"
+                                                data-value="@coupon.DiscountValue"
+                                                data-min="@coupon.MinimumOrderAmount"
+                                                data-expiry="@coupon.ExpiryDate.ToString("dd MMM yyyy")">
+                                            @coupon.CouponCode - @coupon.Description
+                                        </option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-redo me-1"></i>Usage Limit *
+                            </label>
+                            <input type="number" name="remainingUsage" class="form-control"
+                                   value="1" min="1" max="10" required>
+                            <small class="text-muted">How many times customer can use this coupon</small>
+                        </div>
+
+                        <div id="singleCouponInfo" class="alert alert-info" style="display: none;">
+                            <h6>Selected Coupon Details:</h6>
+                            <div id="singleCouponDetails"></div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-check me-1"></i>Assign to Customer
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assign to All Customers -->
+        <div class="col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-users me-2"></i>Assign to All Customers
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="AssignToAll" method="post" onsubmit="return confirmBulkAssign()">
+                        @Html.AntiForgeryToken()
+
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Bulk Assignment:</strong> This will assign the selected coupon
+                            to ALL registered customers.
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-ticket-alt me-1"></i>Select Coupon *
+                            </label>
+                            <select name="couponId" class="form-select" required id="bulkCouponSelect">
+                                <option value="">-- Choose Coupon --</option>
+                                @if (coupons != null)
+                                {
+                                    foreach (var coupon in coupons)
+                                    {
+                                        <option value="@coupon.CouponId"
+                                                data-type="@coupon.DiscountType"
+                                                data-value="@coupon.DiscountValue"
+                                                data-min="@coupon.MinimumOrderAmount"
+                                                data-expiry="@coupon.ExpiryDate.ToString("dd MMM yyyy")">
+                                            @coupon.CouponCode - @coupon.Description
+                                        </option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-redo me-1"></i>Usage Limit *
+                            </label>
+                            <input type="number" name="remainingUsage" class="form-control"
+                                   value="1" min="1" max="10" required>
+                            <small class="text-muted">Usage limit for each customer</small>
+                        </div>
+
+                        <div id="bulkCouponInfo" class="alert alert-info" style="display: none;">
+                            <h6>Selected Coupon Details:</h6>
+                            <div id="bulkCouponDetails"></div>
+                        </div>
+
+                        <div class="alert alert-secondary">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Total Customers:</strong> @(customers?.Count ?? 0)
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-users-cog me-1"></i>Assign to All Customers
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Available Coupons Reference -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">
+                <i class="fas fa-list me-2"></i>Available Active Coupons
+            </h5>
+        </div>
+        <div class="card-body">
+            @if (coupons != null && coupons.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Description</th>
+                                <th>Type</th>
+                                <th>Discount</th>
+                                <th>Min Order</th>
+                                <th>Expiry</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var coupon in coupons)
+                            {
+                                <tr>
+                                    <td><strong class="text-primary">@coupon.CouponCode</strong></td>
+                                    <td>@coupon.Description</td>
+                                    <td>
+                                        @if (coupon.DiscountType == "Percentage")
+                                        {
+                                            <span class="badge bg-info">%</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success">₹</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (coupon.DiscountType == "Percentage")
+                                        {
+                                            <text>@coupon.DiscountValue%</text>
+                                        }
+                                        else
+                                        {
+                                            <text>₹@coupon.DiscountValue</text>
+                                        }
+                                    </td>
+                                    <td>₹@coupon.MinimumOrderAmount</td>
+                                    <td>@coupon.ExpiryDate.ToString("dd MMM yyyy")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-4">
+                    <i class="fas fa-ticket-alt fa-3x text-muted mb-3"></i>
+                    <h5>No Active Coupons Available</h5>
+                    <p class="text-muted">Create an active coupon first to assign to customers</p>
+                    <a href="@Url.Action("Create")" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i>Create Coupon
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    // Show coupon details for single assignment
+    document.getElementById('singleCouponSelect').addEventListener('change', function() {
+        const option = this.options[this.selectedIndex];
+        if (this.value) {
+            const type = option.dataset.type;
+            const value = option.dataset.value;
+            const min = option.dataset.min;
+            const expiry = option.dataset.expiry;
+
+            const discount = type === 'Percentage' ? `${value}% OFF` : `₹${value} OFF`;
+
+            document.getElementById('singleCouponDetails').innerHTML = `
+                <strong>Discount:</strong> ${discount}<br>
+                <strong>Min Order:</strong> ₹${min}<br>
+                <strong>Expires:</strong> ${expiry}
+            `;
+            document.getElementById('singleCouponInfo').style.display = 'block';
+        } else {
+            document.getElementById('singleCouponInfo').style.display = 'none';
+        }
+    });
+
+    // Show coupon details for bulk assignment
+    document.getElementById('bulkCouponSelect').addEventListener('change', function() {
+        const option = this.options[this.selectedIndex];
+        if (this.value) {
+            const type = option.dataset.type;
+            const value = option.dataset.value;
+            const min = option.dataset.min;
+            const expiry = option.dataset.expiry;
+
+            const discount = type === 'Percentage' ? `${value}% OFF` : `₹${value} OFF`;
+
+            document.getElementById('bulkCouponDetails').innerHTML = `
+                <strong>Discount:</strong> ${discount}<br>
+                <strong>Min Order:</strong> ₹${min}<br>
+                <strong>Expires:</strong> ${expiry}
+            `;
+            document.getElementById('bulkCouponInfo').style.display = 'block';
+        } else {
+            document.getElementById('bulkCouponInfo').style.display = 'none';
+        }
+    });
+
+    // Confirm bulk assignment
+    function confirmBulkAssign() {
+        const totalCustomers = @(customers?.Count ?? 0);
+        const couponSelect = document.getElementById('bulkCouponSelect');
+        const couponText = couponSelect.options[couponSelect.selectedIndex].text;
+
+        return confirm(`Are you sure you want to assign "${couponText}" to all ${totalCustomers} customers?`);
+    }
+</script>

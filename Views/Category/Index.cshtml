@@ -1,0 +1,189 @@
+@model IEnumerable<RestaurantFoodOrderingAdmin.Models.Category>
+@{
+    ViewData["Title"] = "Manage Categories";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <h2>
+            <i class="fas fa-th-large me-2"></i>Manage Categories
+        </h2>
+        <div class="d-flex gap-3 align-items-center flex-wrap">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search categories..." 
+                   style="width: 200px;" onkeyup="filterCategories()">
+            <select id="typeFilter" class="form-select" style="width: 150px;" onchange="filterCategories()">
+                <option value="">All Type</option>
+                <option value="veg">Vegetarian</option>
+                <option value="non-veg">Non-Vegetarian</option>
+            </select>
+            <select id="statusFilter" class="form-select" style="width: 150px;" onchange="filterCategories()">
+                <option value="">All Status</option>
+                <option value="Active">Active</option>
+                <option value="Inactive">Inactive</option>
+            </select>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>Add New Category
+            </a>
+        </div>
+    </div>
+
+    <!-- Success/Error Messages -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            <i class="fas fa-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Categories Table -->
+    <div class="card">
+    <div class="card-body">
+        @if (Model.Any())
+        {
+            <div class="table-responsive">
+                <table class="table table-hover" id="categoriesTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Image</th>
+                            <th>Category Name</th>
+                            <th>Description</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Created Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var category in Model)
+                        {
+                            <tr>
+                                <td>@category.CategoryId</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(category.ImageUrl))
+                                    {
+                                        <img src="@category.ImageUrl" alt="@category.CategoryName"
+                                             class="category-img-thumbnail"
+                                             style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                    }
+                                    else
+                                    {
+                                        <div class="category-img-placeholder"
+                                             style="width: 60px; height: 60px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                                                border-radius: 8px; display: flex; align-items: center; justify-content: center;
+                                                                box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                            <i class="fas fa-image text-white"></i>
+                                        </div>
+                                    }
+                                </td>
+                                <td>@category.CategoryName</td>
+                                <td>@(category.Description?.Length > 50 ? category.Description.Substring(0, 50) + "..." : category.Description)</td>
+                                <td>
+                                    @if (category.IsVeg)
+                                    {
+                                        <span class="veg-icon" title="Vegetarian"><span class="veg-circle"></span></span>
+                                    }
+                                    else
+                                    {
+                                        <span class="non-veg-icon" title="Non-Vegetarian"><span class="non-veg-circle"></span></span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (category.IsActive)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Inactive</span>
+                                    }
+                                </td>
+                                <td>@category.CreatedDate.ToString("dd MMM yyyy")</td>
+                                <td>
+                                    <a href="@Url.Action("Edit", new { id = category.CategoryId })"
+                                       class="btn btn-sm btn-warning">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="@Url.Action("Delete", new { id = category.CategoryId })"
+                                       class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-5">
+                <i class="fas fa-th-large fa-5x text-muted mb-3"></i>
+                <h4>No Categories Found</h4>
+                <p class="text-muted">Start by creating your first category.</p>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>Add New Category
+                </a>
+            </div>
+        }
+    </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    function filterCategories() {
+        var searchInput = document.getElementById('searchInput').value.toLowerCase();
+        var typeFilter = document.getElementById('typeFilter').value.toLowerCase();
+        var statusFilter = document.getElementById('statusFilter').value.toLowerCase();
+        var table = document.getElementById('categoriesTable');
+        var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+        
+        for (var i = 0; i < rows.length; i++) {
+            var nameCell = rows[i].getElementsByTagName('td')[2]; // Category Name column (index 2)
+            var typeCell = rows[i].getElementsByTagName('td')[4]; // Type column (index 4)
+            var statusCell = rows[i].getElementsByTagName('td')[5]; // Status column (index 5)
+            
+            var showRow = true;
+            
+            // Search filter
+            if (nameCell && searchInput !== '') {
+                var nameText = nameCell.textContent || nameCell.innerText;
+                if (!nameText.toLowerCase().includes(searchInput)) {
+                    showRow = false;
+                }
+            }
+            
+            // Type filter (check title attribute for veg/non-veg)
+            if (typeCell && typeFilter !== '' && showRow) {
+                var typeSpan = typeCell.querySelector('span');
+                var typeTitle = typeSpan ? typeSpan.getAttribute('title')?.toLowerCase() || '' : '';
+                if (typeFilter === 'veg' && !typeTitle.includes('vegetarian')) {
+                    showRow = false;
+                } else if (typeFilter === 'non-veg' && !typeTitle.includes('non-vegetarian')) {
+                    showRow = false;
+                }
+            }
+            
+            // Status filter
+            if (statusCell && statusFilter !== '' && showRow) {
+                var statusText = statusCell.textContent || statusCell.innerText;
+                if (!statusText.toLowerCase().includes(statusFilter.toLowerCase())) {
+                    showRow = false;
+                }
+            }
+            
+            rows[i].style.display = showRow ? '' : 'none';
+        }
+    }
+</script>
+}
